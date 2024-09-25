@@ -1,0 +1,8 @@
+#byte files
+__pycache__/
+
+#virtual environment
+env/
+
+#environment variables
+.env
