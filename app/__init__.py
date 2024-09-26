@@ -80,9 +80,17 @@ def register_error_handlers(app):
     """Register custom error pages for common HTTP errors."""
     @app.errorhandler(404)
     def not_found_error(error):
-        return {"message": "Resource not found"}, 404
+        return jsonify({
+            "message": "Resource not found",
+            "status":False,
+            "error": 404
+            }), 404
 
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()  # If using a database, rollback on error
-        return {"message": "Internal server error"}, 500
+        return jsonify({
+            "message": "Internal server error",
+            "status":False,
+            "error": 500
+            }), 500

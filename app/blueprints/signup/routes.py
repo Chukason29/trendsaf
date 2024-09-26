@@ -28,7 +28,7 @@ def encode_id(id):
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
 
-@signup_bp.route('/register', methods=["GET, POST"])
+@signup_bp.route('/register', methods=['GET', 'POST'])
 def register(): # The hashed uuid value will be appended to the url link
     try:
         data = {
@@ -102,7 +102,7 @@ def register(): # The hashed uuid value will be appended to the url link
         db.session.close()
 
 
-@signup_bp.route('/verification/<str:id>', methods=["GET", "PATCH"])
+@signup_bp.route('/verification/<string:id>', methods=['GET', 'PATCH'])
 def verification(id):
     try:
         message = ""
@@ -130,36 +130,37 @@ def verification(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/code_resend/<str:id>')
+@signup_bp.route('/code_resend/<string:id>', methods=['GET', 'POST', 'PATCH'])
 def code_resend(id):
     try:
-        decoded_uuid = uuid.UUID(decode_id(id))
-    
+        decoded_uuid = uuid.UUID(decode_id(id))  
         #get record of the user
-        user = Users.query.filter_by(user_uuid = decoded_uuid).first()
-        if user:
-            #TODO #specifically get the mail
-            user_email = user.email
+        if request.method == "GET":
+            user = Users.query.filter_by(user_uuid = decoded_uuid).first()
+        if request.method == "PATCH":
+            if user:
+                #TODO #specifically get the mail
+                user_email = user.email
 
-            #TODO generate a new code and new expiration time and assign them to their respective instances
-            user.verify_code = verify_code
-            user.verify_code_expires = verify_code_expiration
+                #TODO generate a new code and new expiration time and assign them to their respective instances
+                user.verify_code = verify_code
+                user.verify_code_expires = verify_code_expiration
 
-            # Commit the changes
-            db.session.commit()
+                # Commit the changes
+                db.session.commit()
 
-            #TODO send code to the email
-            code_mail_message = "You requested for the confirmation code see it below <br>" + verify_code
-            msg = Message(
-                "Confirm Registration",
-                sender='victoralaegbu@gmail.com',
-                recipients=[user_email]
-            )  # Change to recipient's email
-            msg.body = code_mail_message
-            mail.send(msg) 
-            return jsonify({"status": 200, "message": "code re-sent to email"})
-        else:
-            return jsonify({"message": "An unexpected error occured"})
+                #TODO send code to the email
+                code_mail_message = "You requested for the confirmation code see it below <br>" + verify_code
+                msg = Message(
+                    "Confirm Registration",
+                    sender='victoralaegbu@gmail.com',
+                    recipients=[user_email]
+                )  # Change to recipient's email
+                msg.body = code_mail_message
+                mail.send(msg) 
+                return jsonify({"status": 200, "message": "code re-sent to email"})
+            else:
+                return jsonify({"message": "An unexpected error occured"})
 
     except Exception as e:
         db.session.rollback()
@@ -167,7 +168,7 @@ def code_resend(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/confirmation/<str: id>')
+@signup_bp.route('/confirmation/<string:id>')
 def confirmation(id):
     try:
         #TODO confirm that the user is sending a POST REQUEST
