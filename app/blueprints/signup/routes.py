@@ -28,7 +28,7 @@ def encode_id(id):
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
 
-@signup_bp.route('/register', methods=["POST"])
+@signup_bp.route('/register', methods=["GET, POST"])
 def register(): # The hashed uuid value will be appended to the url link
     try:
         data = {
@@ -44,9 +44,10 @@ def register(): # The hashed uuid value will be appended to the url link
             return jsonify({"message": "Email is not in correct format"})
         else:
             #checking if email exists?
-            user_email = Users.query.filter_by(email=email).first()
-            if user_email:
-                return jsonify({"exists": True, "is_verified":False, "message": "Account with email already exists"})
+            if request.method == "GET":
+                user_email = Users.query.filter_by(email=email).first()
+                if user_email:
+                    return jsonify({"exists": True, "is_verified":False, "message": "Account with email already exists"})
             
             firstname = html.escape(data['firstname'])
             lastname = html.escape(data['lastname'])
@@ -71,7 +72,7 @@ def register(): # The hashed uuid value will be appended to the url link
                     )
             new_user.user_profile = Profile(user_id=Users.user_id)
             #message to send to the user
-            mail_message = "Ur registration code is: " + verify_code
+            
             
 
             #TODO persist info to the data
@@ -79,6 +80,7 @@ def register(): # The hashed uuid value will be appended to the url link
             db.session.commit()
 
             #TODO send mail to user
+            mail_message = "Ur registration code is: " + verify_code
             msg = Message("Confirm Registration",
                 sender='victoralaegbu@gmail.com',
                 recipients=[email])  # Change to recipient's email
@@ -101,7 +103,7 @@ def register(): # The hashed uuid value will be appended to the url link
         db.session.close()
 
 
-@signup_bp.route('/verification/<id>')
+@signup_bp.route('/verification/<str:id>')
 def verification(id):
     try:
         message = ""
@@ -128,7 +130,7 @@ def verification(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/code_resend/<id>')
+@signup_bp.route('/code_resend/<str:id>')
 def code_resend(id):
     try:
         decoded_uuid = uuid.UUID(decode_id(id))
@@ -165,7 +167,7 @@ def code_resend(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/confirmation/<id>')
+@signup_bp.route('/confirmation/<str: id>')
 def confirmation(id):
     try:
         #TODO confirm that the user is sending a POST REQUEST

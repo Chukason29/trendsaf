@@ -5,6 +5,7 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy import Column, Integer, String, and_
 from flask_migrate import Migrate
 from flask import Flask
+from flask_cors import CORS, cross_origin
 from flask_mail import Mail, Message
 from sqlalchemy.dialects.postgresql import UUID
 from .data import data, user_profile
@@ -20,6 +21,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 bcrypt = Bcrypt()
+cors = CORS()
 
 def create_app(config_class=Config):
     
@@ -38,6 +40,24 @@ def create_app(config_class=Config):
     migrate.init_app(app, db) # connects flask migrate to the app an SQLAlchemy
     mail.init_app(app) #initializing the mail class with app
     bcrypt.init_app(app)
+    cors.init_app(app, resources=
+                  {
+                      r"/auth/*": {
+                          "origins": "https://trendsaf.co",
+                          "methods": ["POST", "GET", "PUT", "PATCH"],
+                          "allow_headers": ["Content-Type", "Authorization"], 
+                          "expose_headers": ["Authorization"],
+                          "supports_credentials": True,
+                        },
+                        r"/signup/*": {
+                          "origins": "https://trendsaf.co",
+                          "methods": ["POST", "GET", "PUT", "PATCH"],
+                          "allow_headers": ["Content-Type", "Authorization"], 
+                          "expose_headers": ["Authorization"],
+                          "supports_credentials": True,
+                        }
+                   })
+
 
     # Register blueprints
 
