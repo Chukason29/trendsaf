@@ -28,7 +28,7 @@ def encode_id(id):
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
 
-@signup_bp.route('/register')
+@signup_bp.route('/register', methods=["POST"])
 def register(): # The hashed uuid value will be appended to the url link
     try:
         data = {
@@ -101,8 +101,8 @@ def register(): # The hashed uuid value will be appended to the url link
         db.session.close()
 
 
-@signup_bp.route('/verify_user/<id>')
-def verify_user(id):
+@signup_bp.route('/verification/<id>')
+def verification(id):
     try:
         message = ""
         #TODO collect verification code from form
@@ -128,8 +128,8 @@ def verify_user(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/resend_code/<id>')
-def resend_code(id):
+@signup_bp.route('/code_resend/<id>')
+def code_resend(id):
     try:
         decoded_uuid = uuid.UUID(decode_id(id))
     
@@ -165,8 +165,8 @@ def resend_code(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/confirm_user/<id>')
-def confirm_user(id):
+@signup_bp.route('/confirmation/<id>')
+def confirmation(id):
     try:
         #TODO confirm that the user is sending a POST REQUEST
         user_profile = {
