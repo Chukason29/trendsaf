@@ -49,52 +49,51 @@ def register(): # The hashed uuid value will be appended to the url link
                 if user_email:
                     return jsonify({"exists": True, "is_verified":False, "message": "Account with email already exists"})
             
-            firstname = html.escape(data['firstname'])
-            lastname = html.escape(data['lastname'])
-            #hash the password
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+                firstname = html.escape(data['firstname'])
+                lastname = html.escape(data['lastname'])
+                #hash the password
+                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-            #creating a user uuid for identification
-            new_user_uuid = uuid.uuid4()
+                #creating a user uuid for identification
+                new_user_uuid = uuid.uuid4()
 
-            #convert the uuid to a string and encrypt
-            encrypted_id = encode_id(str(new_user_uuid))
+                #convert the uuid to a string and encrypt
+                encrypted_id = encode_id(str(new_user_uuid))
 
             #Instantiating an object of users
-            new_user = Users(
-                        user_uuid = new_user_uuid, 
-                        firstname = firstname, 
-                        lastname = lastname, 
-                        email = email,
-                        password = hashed_password, 
-                        verify_code=verify_code, 
-                        verify_code_expires=verify_code_expiration
-                    )
-            new_user.user_profile = Profile(user_id=Users.user_id)
-            #message to send to the user
-            
-            
+            if request.method == "POST":
+                new_user = Users(
+                            user_uuid = new_user_uuid, 
+                            firstname = firstname, 
+                            lastname = lastname, 
+                            email = email,
+                            password = hashed_password, 
+                            verify_code=verify_code, 
+                            verify_code_expires=verify_code_expiration
+                        )
+                new_user.user_profile = Profile(user_id=Users.user_id)
+                #message to send to the user
+                
+                #TODO persist info to the data
+                db.session.add(new_user)
+                db.session.commit()
 
-            #TODO persist info to the data
-            db.session.add(new_user)
-            db.session.commit()
+                #TODO send mail to user
+                mail_message = "Ur registration code is: " + verify_code
+                msg = Message("Confirm Registration",
+                    sender='victoralaegbu@gmail.com',
+                    recipients=[email])  # Change to recipient's email
+                msg.body = mail_message
+                mail.send(msg)
 
-            #TODO send mail to user
-            mail_message = "Ur registration code is: " + verify_code
-            msg = Message("Confirm Registration",
-                sender='victoralaegbu@gmail.com',
-                recipients=[email])  # Change to recipient's email
-            msg.body = mail_message
-            mail.send(msg)
-
-            #TODO return a json object
-            return jsonify({
-                    "status": 200, 
-                    "message": "Registration successful", 
-                    "is_confirmed": False, 
-                    "is_verified":False, 
-                    "id": encrypted_id
-                })
+                #TODO return a json object
+                return jsonify({
+                        "status": 200, 
+                        "message": "Registration successful", 
+                        "is_confirmed": False, 
+                        "is_verified":False, 
+                        "id": encrypted_id
+                    })
             
     except Exception as e:
         db.session.rollback()
@@ -103,7 +102,7 @@ def register(): # The hashed uuid value will be appended to the url link
         db.session.close()
 
 
-@signup_bp.route('/verification/<str:id>')
+@signup_bp.route('/verification/<str:id>', methods=["GET", "PATCH"])
 def verification(id):
     try:
         message = ""
@@ -113,14 +112,15 @@ def verification(id):
         }
         #TODO decode the encrypted uuid and covert back to uuid format
         decoded_uuid = uuid.UUID(decode_id(id))
-
-        #TODO get record of the user
-        user = Users.query.filter(and_(Users.user_uuid == decoded_uuid, Users.verify_code == verify_data['code'])).first()
+        if request.method == "GET":
+            #TODO get record of the user
+            user = Users.query.filter(and_(Users.user_uuid == decoded_uuid, Users.verify_code == verify_data['code'])).first()
 
         if user:
-            user.is_verified = True
-            db.session.commit()
-            message = jsonify({"status": "verified", "is_verified": True, "is_confirmed":False, "message": "verification successful"})
+            if request.method == "PATCH":
+                user.is_verified = True
+                db.session.commit()
+                message = jsonify({"status": "verified", "is_verified": True, "is_confirmed":False, "message": "verification successful"})
         else:
             message = jsonify({"status": "unverified", "is_verified": False, "is_confirmed":False, "message": "verification unsuccessful"})
         return message
