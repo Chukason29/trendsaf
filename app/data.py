@@ -15,5 +15,4 @@ user_profile = {
     "phone": "+234907876356",
     "province": "Ngalo",
     "country": "Rwanda",
-
 }
