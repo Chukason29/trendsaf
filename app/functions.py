@@ -2,10 +2,11 @@ import re
 import random
 import string
 import pendulum
-import uuid
 import base64
 import os
 import hashlib
+from itsdangerous import URLSafeSerializer
+from .config import Config
 
 
 
@@ -23,6 +24,17 @@ data = {
             "province": "Kaduna",
             "country": "India"
         }
+
+serializer = URLSafeSerializer(Config.AES_KEY)
+
+#encoding and decode IDs
+def encode_id(id):
+    return serializer.dumps(id)
+
+# Function to decode the ID
+def decode_id(encoded_id):
+    return serializer.loads(encoded_id)
+
 def is_valid_email(email):
     # Define the regular expression for validating an email
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -60,7 +72,3 @@ def add_duration(hours):
 # A 24 hour expiration time for registration code
 verify_code_expiration = add_duration(24)
 
-
-# Function to hash the ID using SHA256
-def encode_id(id):
-    return base64.urlsafe_b64encode(hashlib.sha256(str(id).encode()).digest()).decode('utf-8')

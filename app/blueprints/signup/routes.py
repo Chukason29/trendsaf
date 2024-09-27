@@ -5,6 +5,7 @@ from ... import db
 from ... import bcrypt
 from ... import mail
 from ... import register_error_handlers
+from ...functions import encode_id, decode_id
 from itsdangerous import URLSafeSerializer
 from sqlalchemy import Column, Integer, String, and_
 from flask_mail import Mail, Message
@@ -21,13 +22,6 @@ import html
 
 signup_bp = Blueprint('signup', __name__)
 
-serializer = URLSafeSerializer(Config.AES_KEY)
-def encode_id(id):
-    return serializer.dumps(id)
-
-# Function to decode the ID
-def decode_id(encoded_id):
-    return serializer.loads(encoded_id)
 
 @signup_bp.route('/registration', methods=['GET', 'POST'])
 def registration(): # The hashed uuid value will be appended to the url link
