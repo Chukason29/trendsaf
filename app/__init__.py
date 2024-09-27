@@ -12,6 +12,7 @@ from .data import data, user_profile
 from dotenv import load_dotenv
 from datetime import datetime
 from .config import Config #collecting the Config class from config.py to configure the app
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
 # Load environment variables from .env
 load_dotenv()
@@ -22,6 +23,7 @@ migrate = Migrate()
 mail = Mail()
 bcrypt = Bcrypt()
 cors = CORS()
+jwt = JWTManager()
 
 def create_app(config_class=Config):
     
@@ -40,6 +42,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db) # connects flask migrate to the app an SQLAlchemy
     mail.init_app(app) #initializing the mail class with app
     bcrypt.init_app(app)
+    jwt.init_app(app)
     cors.init_app(app, resources=
                   {
                       r"/auth/*": {
