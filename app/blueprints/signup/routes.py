@@ -97,19 +97,21 @@ def registration(): # The hashed uuid value will be appended to the url link
     finally:
         db.session.close()
 
-@signup_bp.route('/verification/<string:id>', methods=['GET', 'PATCH'])
+@signup_bp.route('/verification/<string:id>', methods=['GET', 'PATCH', 'POST'])
 def verification(id):
     try:
         message = ""
+        verify_data = request.get_json()
         #TODO collect verification code from form
-        verify_data={
-            "code": "VZ5f8u5Y"
-        }
+
+        if "code" not in verify_data:
+            abort(422)
+
         #TODO decode the encrypted uuid and covert back to uuid format
         decoded_uuid = uuid.UUID(decode_id(id))
-        if request.method == "GET":
-            #TODO get record of the user
-            user = Users.query.filter(and_(Users.user_uuid == decoded_uuid, Users.verify_code == verify_data['code'])).first()
+
+        #TODO get record of the user
+        user = Users.query.filter(and_(Users.user_uuid == decoded_uuid, Users.verify_code == verify_data['code'])).first()
 
         if user:
             if request.method == "PATCH":
@@ -117,11 +119,11 @@ def verification(id):
                 db.session.commit()
                 message = jsonify({"status": "verified", "is_verified": True, "is_confirmed":False, "message": "verification successful"})
         else:
-            message = jsonify({"status": "unverified", "is_verified": False, "is_confirmed":False, "message": "verification unsuccessful"})
+            abort(401)
         return message
     except Exception as e:
         db.session.rollback()
-        return str(e)
+        raise
     finally:
         db.session.close()
 

@@ -36,6 +36,9 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     app.config.get(Config.SQLALCHEMY_DATABASE_URI)
     app.config.get(Config.SQLALCHEMY_TRACK_MODIFICATIONS)
+    app.config.get(Config.SECRET_KEY)
+    app.config["JWT_SECRET_KEY"]
+    app.config.get(Config.JWT_SECRET_KEY)
 
      # Initialize extensions with the app
     db.init_app(app)#create an instance of th SQLALCHEMY to access the database from here
@@ -102,6 +105,13 @@ def register_error_handlers(app):
             "status":False,
             "error": 405
             }), 405
+    @app.errorhandler(411)
+    def not_found_error(error):
+        return jsonify({
+            "message": "wrong email or password",
+            "status":False,
+            "error": 411
+            }), 411
 
     @app.errorhandler(422)
     def missing_parameter_error(error):
