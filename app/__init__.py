@@ -44,15 +44,15 @@ def create_app(config_class=Config):
                   {
                       r"/auth/*": {
                           "origins": "https://trendsaf.co",
-                          "methods": ["POST", "GET", "PUT", "PATCH"],
-                          "allow_headers": ["Content-Type", "Authorization"], 
+                          "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
+                          "allow_headers": ["Content-Type", "Authorization", "true"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
                         },
                         r"/signup/*": {
                           "origins": "https://trendsaf.co",
-                          "methods": ["POST", "GET", "PUT", "PATCH"],
-                          "allow_headers": ["Content-Type", "Authorization"], 
+                          "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
+                          "allow_headers": ["Content-Type", "Authorization", "true"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
                         }
@@ -78,6 +78,13 @@ def create_app(config_class=Config):
 #Handling errors
 def register_error_handlers(app):
     """Register custom error pages for common HTTP errors."""
+    @app.errorhandler(401)
+    def not_found_error(error):
+        return jsonify({
+            "message": "unauthorized access",
+            "status":False,
+            "error": 401
+            }), 401
     @app.errorhandler(404)
     def not_found_error(error):
         return jsonify({
@@ -85,7 +92,22 @@ def register_error_handlers(app):
             "status":False,
             "error": 404
             }), 404
+    @app.errorhandler(405)
+    def not_found_error(error):
+        return jsonify({
+            "message": "api call method not permitted",
+            "status":False,
+            "error": 405
+            }), 405
 
+    @app.errorhandler(422)
+    def missing_parameter_error(error):
+        db.session.rollback()  # If using a database, rollback on error
+        return jsonify({
+            "message": "missing parameter",
+            "status":False,
+            "error": 422
+            }), 422
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()  # If using a database, rollback on error

@@ -1,9 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from ...models import Users, Profile
 from ...config import Config
 from ... import db
 from ... import bcrypt
 from ... import mail
+from ... import register_error_handlers
 from itsdangerous import URLSafeSerializer
 from sqlalchemy import Column, Integer, String, and_
 from flask_mail import Mail, Message
@@ -28,15 +29,15 @@ def encode_id(id):
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
 
-@signup_bp.route('/register', methods=['GET', 'POST'])
-def register(): # The hashed uuid value will be appended to the url link
+@signup_bp.route('/registration', methods=['GET', 'POST'])
+def registration(): # The hashed uuid value will be appended to the url link
     try:
-        data = {
-            "firstname" : "Tolu",
-            "lastname" : "Alaegbu",
-            "email" : "ebuka@waowx.com",
-            "password" : "010101012203"
-        }
+        #get json data from api body
+        data = request.get_json() 
+        #check if all required parameters are contained in the json body
+        if 'firstname' not in data or 'lastname' not in data or 'email' not in data or 'password' not in data:
+            abort(422)
+        
         message = ""
         email = html.escape(data['email'])
         password = data["password"]
@@ -44,10 +45,10 @@ def register(): # The hashed uuid value will be appended to the url link
             return jsonify({"message": "Email is not in correct format"})
         else:
             #checking if email exists?
-            if request.method == "GET":
+            if request.method == "POST":
                 user_email = Users.query.filter_by(email=email).first()
                 if user_email:
-                    return jsonify({"exists": True, "is_verified":False, "message": "Account with email already exists"})
+                    return jsonify({"exists": True, "is_verified":False, "message": "Account with email already exists"}), 400
             
                 firstname = html.escape(data['firstname'])
                 lastname = html.escape(data['lastname'])
@@ -61,7 +62,7 @@ def register(): # The hashed uuid value will be appended to the url link
                 encrypted_id = encode_id(str(new_user_uuid))
 
             #Instantiating an object of users
-            if request.method == "POST":
+           
                 new_user = Users(
                             user_uuid = new_user_uuid, 
                             firstname = firstname, 
@@ -93,14 +94,14 @@ def register(): # The hashed uuid value will be appended to the url link
                         "is_confirmed": False, 
                         "is_verified":False, 
                         "id": encrypted_id
-                    })
-            
+                    }), 200
+            else:
+                abort(405)
     except Exception as e:
         db.session.rollback()
         return str(e)
     finally:
         db.session.close()
-
 
 @signup_bp.route('/verification/<string:id>', methods=['GET', 'PATCH'])
 def verification(id):
