@@ -1,5 +1,5 @@
 from .functions import is_valid_email, verify_code, verify_code_expiration
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy import Column, Integer, String, and_
@@ -37,8 +37,10 @@ def create_app(config_class=Config):
     app.config.get(Config.SQLALCHEMY_DATABASE_URI)
     app.config.get(Config.SQLALCHEMY_TRACK_MODIFICATIONS)
     app.config.get(Config.SECRET_KEY)
-    app.config["JWT_SECRET_KEY"]
     app.config.get(Config.JWT_SECRET_KEY)
+    app.config.get(Config.JWT_ERROR_MESSAGE_KEY)
+    app.config.get(Config.SECRET_KEY)
+
 
      # Initialize extensions with the app
     db.init_app(app)#create an instance of th SQLALCHEMY to access the database from here
@@ -74,6 +76,10 @@ def create_app(config_class=Config):
     #registration, verification and confirmation blueprint
     from .blueprints.signup.routes import signup_bp
     app.register_blueprint(signup_bp, url_prefix='/signup')
+
+    app.route('/')
+    def index():
+        return redirect
 
     # Register error handlers
     register_error_handlers(app)

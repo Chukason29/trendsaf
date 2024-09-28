@@ -5,7 +5,8 @@ import pendulum
 import base64
 import os
 import hashlib
-from itsdangerous import URLSafeSerializer
+from flask import request, jsonify, abort
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
 from .config import Config
 
 
@@ -34,6 +35,11 @@ def encode_id(id):
 # Function to decode the ID
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
+
+# Generate a reset token for password reset
+def generate_reset_token(user):
+    timed_serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
+    return timed_serializer.dumps(str(user.user_uuid), salt=Config.RESET_PASSWORD_SALT)
 
 def is_valid_email(email):
     # Define the regular expression for validating an email
@@ -72,3 +78,16 @@ def add_duration(hours):
 # A 24 hour expiration time for registration code
 verify_code_expiration = add_duration(24)
 
+def get_token_auth_header():
+## check if authorization is not in request
+    if 'Authorization' not in request.headers:
+        abort(401)
+## get the token   
+    auth_header = request.headers['Authorization']
+    header_parts = auth_header.split(' ')
+## check if token is valid
+    if len(header_parts) != 2:
+        abort(401)
+    elif header_parts[0].lower() != 'bearer':
+        abort(401) 
+    return header_parts[1]

@@ -23,6 +23,7 @@ class Users(db.Model):
     # Relationship to user profile and OAuth accounts
     oauth_accounts = db.relationship('OAuthAccount', backref='oauth', lazy=True)
 
+
 class Profile(db.Model):
     __tablename__ = "profile"
     profile_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
