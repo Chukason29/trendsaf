@@ -5,7 +5,7 @@ from ... import db
 from ... import bcrypt
 from ... import mail
 from ... import register_error_handlers
-from ...functions import encode_id, decode_id
+from ...functions import encode_id, decode_id, is_json, is_valid_email, verify_code, verify_code_expiration
 from itsdangerous import URLSafeSerializer
 from sqlalchemy import Column, Integer, String, and_
 from flask_mail import Mail, Message
@@ -27,7 +27,10 @@ signup_bp = Blueprint('signup', __name__)
 def registration(): # The hashed uuid value will be appended to the url link
     try:
         #get json data from api body
-        data = request.get_json() 
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        
         #check if all required parameters are contained in the json body
         if 'firstname' not in data or 'lastname' not in data or 'email' not in data or 'password' not in data:
             abort(422)
@@ -36,7 +39,7 @@ def registration(): # The hashed uuid value will be appended to the url link
         email = html.escape(data['email'])
         password = data["password"]
         if not is_valid_email(data['email']): #checking if email is in correct format
-            return jsonify({"message": "Email is not in correct format"})
+            return jsonify({"message": "invalid email"})
         else:
             #checking if email exists?
             if request.method == "POST":
@@ -93,7 +96,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                 abort(405)
     except Exception as e:
         db.session.rollback()
-        return str(e)
+        raise
     finally:
         db.session.close()
 
@@ -117,23 +120,21 @@ def verification(id):
             if request.method == "PATCH":
                 user.is_verified = True
                 db.session.commit()
-                message = jsonify({"status": "verified", "is_verified": True, "is_confirmed":False, "message": "verification successful"})
+                return jsonify({"status": "verified", "is_verified": True, "is_confirmed":False, "message": "verification successful"})
         else:
             abort(401)
-        return message
     except Exception as e:
         db.session.rollback()
         raise
     finally:
         db.session.close()
 
-@signup_bp.route('/code_resend/<string:id>', methods=['GET', 'POST', 'PATCH'])
+@signup_bp.route('/code_resend/<string:id>', methods=['GET', 'PATCH'])
 def code_resend(id):
     try:
         decoded_uuid = uuid.UUID(decode_id(id))  
         #get record of the user
-        if request.method == "GET":
-            user = Users.query.filter_by(user_uuid = decoded_uuid).first()
+        user = Users.query.filter_by(user_uuid = decoded_uuid).first()
         if request.method == "PATCH":
             if user:
                 #TODO #specifically get the mail
@@ -158,118 +159,15 @@ def code_resend(id):
                 return jsonify({"status": 200, "message": "code re-sent to email"})
             else:
                 return jsonify({"message": "An unexpected error occured"})
-
-    except Exception as e:
-        db.session.rollback()
-        return str(e)
-    finally:
-        db.session.close()
-
-@signup_bp.route('/confirmation/<string:id>')
-def confirmation(id):
-    try:
-        #TODO confirm that the user is sending a POST REQUEST
-        user_profile = {
-            "company_name" : "Tolu and sons",
-            "company_type": "Suppliers",
-            "company_size": "A",
-            "start_year": "1984",
-            "annual_revenue": "C",
-            "company_role": "B",
-            "phone": "+234907876356",
-            "province": "Ngalo",
-            "country": "Rwanda",
-        }
-        #TODO collect info from client and remove all htmlentities and make sure they are not empty
-        company_name = html.escape(user_profile["company_name"])
-        country = html.escape(user_profile["country"])
-        company_type = html.escape(user_profile["company_type"])
-        company_size = html.escape(user_profile["company_size"])
-        start_year = html.escape(user_profile["start_year"])
-        annual_revenue = html.escape(user_profile["annual_revenue"])
-        company_role = html.escape(user_profile["company_role"])
-        province = html.escape(user_profile["province"])
-        phone = html.escape(user_profile["phone"])
-
-
-        #TODO decode the uuid and assign to a variable
-        decoded_uuid = uuid.UUID(decode_id(id))
-
         
-        user_query = Users.query.filter_by(user_uuid = decoded_uuid).first()
 
-        #TODO collect and assign user's id and email
-        user_id = user_query.user_id
-        user_email = user_query.email
-
-        #TODO send data to the database
-        user_query.is_confirmed = True #updating is_confirmed column
-
-        user_query.user_profile = Profile(
-                company_name=company_name,
-                company_type=company_type,
-                company_size=company_size,
-                start_year=start_year,
-                annual_revenue=annual_revenue,
-                company_role=company_role,
-                phone=phone,
-                province=province
-        )
-
-        db.session.commit()
-        #TODO send confirmation email to the user
-        message = "Congratulations your account has been confirmed"
-        msg = Message("Registration COnfirmation",
-        sender='victoralaegbu@gmail.com',
-        recipients=[user_email])  # Change to recipient's email
-        msg.body = message
-        mail.send(msg) 
-        return jsonify({
-            "is_confirmed": True
-        })
     except Exception as e:
         db.session.rollback()
         return str(e)
     finally:
         db.session.close()
+
 @signup_bp.route('/')
 def index():
     return "Hello World"
 
-
-def is_valid_email(email):
-    # Define the regular expression for validating an email
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    
-    # Use re.match to check if the string matches the email pattern
-    if re.match(email_regex, email):
-        return True
-    return False
-
-
-#function to generate random code for registration and password resetting
-def generate_random_code(length):
-    # Combine letters and digits
-    characters = string.ascii_letters + string.digits
-    # Generate a random code
-    return ''.join(random.choices(characters, k=length))
-
-#Generate a random alphanumeric code of length 8
-verify_code = generate_random_code(8)
-
-
-#this function collects a time and adds a duration it
-def time_duration(previous_time, added_duration):
-    pass
-
-
-def add_duration(hours):
-    # Get the current time using Pendulum
-    current_time = pendulum.now()
-    
-    # Add the specified duration (in days)
-    new_time = current_time.add(hours=hours)
-    return new_time
-
-# A 24 hour expiration time for registration code
-verify_code_expiration = add_duration(24)

@@ -5,8 +5,10 @@ import pendulum
 import base64
 import os
 import hashlib
+import json
+import uuid
 from flask import request, jsonify, abort
-from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, SignatureExpired, BadSignature
 from .config import Config
 
 
@@ -41,6 +43,19 @@ def generate_reset_token(user):
     timed_serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
     return timed_serializer.dumps(str(user.user_uuid), salt=Config.RESET_PASSWORD_SALT)
 
+# Validate a reset token
+def validate_reset_token(token):
+    serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
+    try:
+        user_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=900)# 30 seconds
+        user_uuid = encode_id(str(uuid.UUID(user_uuid)))
+        return jsonify({ "id": user_uuid, "status" : True})
+    except SignatureExpired:
+        return jsonify({"status" : False, "message" : "token has expired"})
+    except BadSignature:
+        return jsonify({"status" : False, "message" : "invalid token"})
+    
+
 def is_valid_email(email):
     # Define the regular expression for validating an email
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -50,6 +65,13 @@ def is_valid_email(email):
         return True
     return False
 
+
+def is_json(data):
+    try:
+        json.dumps(data)
+        return True
+    except (TypeError, ValueError):
+        return False
 
 #function to generate random code for registration and password resetting
 def generate_random_code(length):

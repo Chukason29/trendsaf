@@ -40,6 +40,7 @@ def create_app(config_class=Config):
     app.config.get(Config.JWT_SECRET_KEY)
     app.config.get(Config.JWT_ERROR_MESSAGE_KEY)
     app.config.get(Config.SECRET_KEY)
+    app.config.get(Config.JWT_COOKIE_CSRF_PROTECT)
 
 
      # Initialize extensions with the app
@@ -97,6 +98,15 @@ def register_error_handlers(app):
             "status":False,
             "error": 401
             }), 401
+    
+    @app.errorhandler(403)
+    def access_error(error):
+        return jsonify({
+            "message": "unauthorized access",
+            "status":False,
+            "error": 403
+            }), 403
+    
     @app.errorhandler(404)
     def not_found_error(error):
         return jsonify({
@@ -104,20 +114,30 @@ def register_error_handlers(app):
             "status":False,
             "error": 404
             }), 404
+    
     @app.errorhandler(405)
-    def not_found_error(error):
+    def wrong_method_error(error):
         return jsonify({
             "message": "api call method not permitted",
             "status":False,
             "error": 405
             }), 405
+    
     @app.errorhandler(411)
-    def not_found_error(error):
+    def authentication_error(error):
         return jsonify({
             "message": "wrong email or password",
             "status":False,
             "error": 411
             }), 411
+    
+    @app.errorhandler(415)
+    def datatype_error(error):
+        return jsonify({
+            "message": "wrong data type, requires json data",
+            "status":False,
+            "error": 415
+            }), 415
 
     @app.errorhandler(422)
     def missing_parameter_error(error):
@@ -127,6 +147,7 @@ def register_error_handlers(app):
             "status":False,
             "error": 422
             }), 422
+    
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()  # If using a database, rollback on error
