@@ -77,15 +77,18 @@ def create_app(config_class=Config):
     #registration, verification and confirmation blueprint
     from .blueprints.signup.routes import signup_bp
     app.register_blueprint(signup_bp, url_prefix='/signup')
-
-    app.route('/')
-    def index():
-        return "Welcome trendsaf"
-
-    # Register error handlers
+    
     register_error_handlers(app)
 
+    @app.route('/')
+    def index():
+        return "Hello, World!"
+
+    # Register error handlers
+    
+
     return app
+    
 
 
 #Handling errors
