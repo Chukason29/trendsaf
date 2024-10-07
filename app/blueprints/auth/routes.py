@@ -218,7 +218,8 @@ def confirmation():
             #TODO get the jwt token from the header and extract
             id = decode_id(get_jwt_identity())
 
-            session_id = str(uuid.UUID(decode_id(session["user_uuid"])))            
+            session_id = str(uuid.UUID(decode_id(session["user_uuid"])))
+                  
             
             if not csrf_token_in_header or csrf_token_in_header != csrf_token_in_cookie:
                 abort(403)
@@ -242,8 +243,8 @@ def confirmation():
             phone = html.escape(user_profile["phone"])
 
 
-            #TODO decode the uuid and assign to a variable
-            decoded_uuid = uuid.UUID(decode_id(id))
+            #TODO converting id to proper uuid and assign to a variable
+            decoded_uuid = uuid.UUID(id)
 
             
             user_query = Users.query.filter_by(user_uuid = decoded_uuid).first()
