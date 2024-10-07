@@ -1,5 +1,5 @@
 from .functions import is_valid_email, verify_code, verify_code_expiration
-from flask import Flask, jsonify, redirect, session
+from flask import Flask, jsonify, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy import Column, Integer, String, and_
@@ -78,13 +78,12 @@ def create_app(config_class=Config):
     from .blueprints.signup.routes import signup_bp
     app.register_blueprint(signup_bp, url_prefix='/signup')
     
+    # Register error handlers
     register_error_handlers(app)
 
     @app.route('/')
     def index():
-        return "Hello, World!"
-
-    # Register error handlers
+        return redirect('https://trendsaf.co')
     
 
     return app
