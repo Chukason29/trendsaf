@@ -4,6 +4,8 @@ blinker==1.8.2
 cffi==1.17.1
 click==8.1.7
 colorama==0.4.6
+distlib==0.3.8
+filelock==3.16.0
 Flask==3.0.3
 Flask-Bcrypt==1.0.1
 Flask-Mail==0.10.0
@@ -15,6 +17,7 @@ Jinja2==3.1.4
 Mako==1.3.5
 MarkupSafe==2.1.5
 pendulum==3.0.0
+platformdirs==4.3.2
 psycopg2==2.9.9
 pycparser==2.22
 python-dateutil==2.9.0.post0
@@ -24,4 +27,5 @@ SQLAlchemy==2.0.34
 time-machine==2.15.0
 typing_extensions==4.12.2
 tzdata==2024.1
+virtualenv==20.26.4
 Werkzeug==3.0.4
