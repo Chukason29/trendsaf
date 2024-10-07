@@ -80,7 +80,7 @@ def create_app(config_class=Config):
 
     app.route('/')
     def index():
-        return redirect
+        return "Welcome trendsaf"
 
     # Register error handlers
     register_error_handlers(app)
