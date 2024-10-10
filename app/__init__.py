@@ -52,14 +52,14 @@ def create_app(config_class=Config):
     cors.init_app(app, resources=
                   {
                       r"/auth/*": {
-                          "origins": "https://trendsaf.co",
+                          "origins": "*",
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
                           "allow_headers": ["Content-Type", "Authorization", "true"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
                         },
                         r"/signup/*": {
-                          "origins": "https://trendsaf.co",
+                          "origins": "*",
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
                           "allow_headers": ["Content-Type", "Authorization", "true"], 
                           "expose_headers": ["Authorization"],
