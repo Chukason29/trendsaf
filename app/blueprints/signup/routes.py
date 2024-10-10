@@ -5,7 +5,7 @@ from ... import db
 from ... import bcrypt
 from ... import mail
 from ... import register_error_handlers
-from ...functions import encode_id, decode_id, is_json, is_valid_email, verify_code, verify_code_expiration
+from ...functions import encode_id, decode_id, is_json, is_valid_email, verify_code, verify_code_expiration, generate_verification_link,validate_verification_link
 from itsdangerous import URLSafeSerializer
 from sqlalchemy import Column, Integer, String, and_
 from flask_mail import Mail, Message
@@ -75,9 +75,12 @@ def registration(): # The hashed uuid value will be appended to the url link
                 #TODO persist info to the data
                 db.session.add(new_user)
                 db.session.commit()
+                
+                #creating a link to be sent to mail
+                link = generate_verification_link(email)
 
                 #TODO send mail to user
-                mail_message = "Ur registration code is: " + verify_code
+                mail_message = "Click this link to verify your email address: " + link
                 msg = Message("Confirm Registration",
                     sender='victoralaegbu@gmail.com',
                     recipients=[email])  # Change to recipient's email
@@ -89,8 +92,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                         "status": 200, 
                         "message": "Registration successful", 
                         "is_confirmed": False, 
-                        "is_verified":False, 
-                        "id": encrypted_id
+                        "is_verified":False
                     }), 200
             else:
                 abort(405)
@@ -166,6 +168,29 @@ def code_resend(id):
         return str(e)
     finally:
         db.session.close()
+
+
+@signup_bp.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        email_response = validate_verification_link(token).get_json()
+        if email_response['status'] == True:
+            email = email_response['email']
+            user = Users.query.filter(and_(Users.email == email)).first()
+            user.is_verified = True
+            db.session.commit()
+            return jsonify({
+                "status": True,
+                "message" : "email is verified"
+            })
+    except:
+        db.session.rollback()
+        return jsonify({
+                "status": False,
+                "message" : "link is expired"
+            })
+        
+        
 
 @signup_bp.route('/')
 def index():

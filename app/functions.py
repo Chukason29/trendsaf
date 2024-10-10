@@ -7,7 +7,7 @@ import os
 import hashlib
 import json
 import uuid
-from flask import request, jsonify, abort
+from flask import request, jsonify, abort, url_for
 from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, SignatureExpired, BadSignature
 from .config import Config
 
@@ -29,6 +29,7 @@ data = {
         }
 
 serializer = URLSafeSerializer(Config.AES_KEY)
+timed_serializer = URLSafeTimedSerializer(Config.AES_KEY)
 
 #encoding and decode IDs
 def encode_id(id):
@@ -38,6 +39,25 @@ def encode_id(id):
 def decode_id(encoded_id):
     return serializer.loads(encoded_id)
 
+def generate_verification_link(email):
+    token = timed_serializer.dumps(email, salt=Config.SECRET_KEY)
+    link = url_for('signup.confirm_email', token=token, _external=True)
+    return link
+
+def validate_verification_link(token):
+    try:
+        email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=3600)  # 1-hour expiration
+    except SignatureExpired:
+        return jsonify({
+            "status": False,
+            "message": "Expired Link"
+            
+        })
+    return jsonify({
+        "status": True,
+        "message": "Email is verified",
+        "email" : email
+    })
 # Generate a reset token for password reset
 def generate_reset_token(user):
     timed_serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
@@ -54,6 +74,7 @@ def validate_reset_token(token):
         return jsonify({"status" : False, "message" : "token has expired"})
     except BadSignature:
         return jsonify({"status" : False, "message" : "invalid token"})
+
     
 
 def is_valid_email(email):
