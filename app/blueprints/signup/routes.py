@@ -195,6 +195,10 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
+                return jsonify({
+                "status" : True,
+                "message": "user verified"
+            })
         else:
             return jsonify({
                 "status" : False,

@@ -88,6 +88,7 @@ def login():
                         )
                 session["user_role"] = result.role
                 response =  jsonify({
+                    "access_token": access_token,
                     "status": True,
                     "is_verified": user.is_verified,
                     "is_confirmed": user.is_confirmed,
@@ -219,7 +220,6 @@ def confirmation():
 
             session_id = str(uuid.UUID(decode_id(session["user_uuid"])))
                   
-            
             if not csrf_token_in_header or csrf_token_in_header != csrf_token_in_cookie:
                 abort(403)
             
