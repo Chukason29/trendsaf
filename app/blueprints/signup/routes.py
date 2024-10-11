@@ -179,13 +179,10 @@ def confirm_email(token):
             user = Users.query.filter(and_(Users.email == email)).first()
             user.is_verified = True
             db.session.commit()
-            return redirect ('http://localhost:5173/')
+            return redirect ('http://localhost:5173/success')
     except:
         db.session.rollback()
-        return jsonify({
-                "status": False,
-                "message" : "link is expired"
-            })
+        return redirect ('http://localhost:5173/error')
         
         
 
