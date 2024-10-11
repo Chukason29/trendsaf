@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, redirect
 from ...models import Users, Profile
 from ...config import Config
 from ... import db
@@ -179,10 +179,7 @@ def confirm_email(token):
             user = Users.query.filter(and_(Users.email == email)).first()
             user.is_verified = True
             db.session.commit()
-            return jsonify({
-                "status": True,
-                "message" : "email is verified"
-            })
+            return redirect ('http://localhost:5173/')
     except:
         db.session.rollback()
         return jsonify({
