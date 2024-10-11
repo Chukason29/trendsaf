@@ -80,4 +80,10 @@ class LoginTable(db.Model):
     user_agent = db.Column(db.String(50), nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     expires_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+    
+class Tokens(db.Model):
+    __tablename__ = "tokens"
+    token_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    token = db.Column(db.String(1000), nullable=False)
+    is_token_used = db.Column(db.Boolean, default=False)
 

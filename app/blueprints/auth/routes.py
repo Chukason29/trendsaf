@@ -73,8 +73,8 @@ def login():
                 samesite='None' # Change based on your requirements
             )
 
-            # Set CSRF token as a non-HttpOnly cookie
-            #response.set_cookie('csrf_token', csrf_token, httponly=False)
+            #Set CSRF token as a non-HttpOnly cookie
+            response.set_cookie('csrf_token', access_token, httponly=False)
 
             #creating session for user once verification is true                        
             session["user_uuid"] = id
@@ -207,7 +207,6 @@ def auth_access():
 @auth_bp.route('/confirmation', methods=["POST"])
 @jwt_required()
 def confirmation():
-   
         try:
             #TODO Get the access token from the request
             csrf_token_in_cookie = request.cookies.get('access_token')

@@ -46,12 +46,11 @@ def generate_verification_link(email):
 
 def validate_verification_link(token):
     try:
-        email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=60)  # 1-hour expiration
+        email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=3600)  # 1-hour expiration
     except SignatureExpired:
         return jsonify({
             "status": False,
             "message": "Expired Link"
-            
         })
     return jsonify({
         "status": True,

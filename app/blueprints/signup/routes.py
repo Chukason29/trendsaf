@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify, abort, redirect
-from ...models import Users, Profile
+from flask import Blueprint, request, jsonify, abort, redirect, url_for
+from ...models import Users, Profile, Tokens
 from ...config import Config
 from ... import db
 from ... import bcrypt
@@ -58,7 +58,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                 #convert the uuid to a string and encrypt
                 encrypted_id = encode_id(str(new_user_uuid))
 
-            #Instantiating an object of users
+                #TODO Instantiating an object of users
            
                 new_user = Users(
                             user_uuid = new_user_uuid, 
@@ -71,13 +71,21 @@ def registration(): # The hashed uuid value will be appended to the url link
                         )
                 new_user.user_profile = Profile(user_id=Users.user_id)
                 #message to send to the user
-                
-                #TODO persist info to the data
-                db.session.add(new_user)
-                db.session.commit()
+            
                 
                 #creating a link to be sent to mail
                 link = generate_verification_link(email)
+                
+                #TODO Instantiating an object of tokens
+                
+                token = Tokens(token = link, is_token_used = False)
+                
+                #TODO persist info to the data
+                db.session.add(new_user)
+                db.session.add(token)
+                db.session.commit()
+                
+                
 
                 #TODO send mail to user
                 mail_message = "Click this link to verify your email address: " + link
@@ -173,16 +181,32 @@ def code_resend(id):
 @signup_bp.route('/confirm_email/<token>')
 def confirm_email(token):
     try:
-        email_response = validate_verification_link(token).get_json()
-        if email_response['status'] == True:
-            email = email_response['email']
-            user = Users.query.filter(and_(Users.email == email)).first()
-            user.is_verified = True
-            db.session.commit()
-            return redirect ('http://localhost:5173/success')
+        link = url_for('signup.confirm_email', token=token, _external = True)
+        
+        #TODO querying token for usage and 
+        
+        token_filter = Tokens.query.filter(and_(Tokens.token == link)).first()
+        if token_filter and token_filter.is_token_used==False:
+            email_response = validate_verification_link(token).get_json()
+            if email_response['status'] == True:
+                email = email_response['email']
+                user = Users.query.filter(and_(Users.email == email)).first()
+                user.is_verified = True
+                token_filter.is_token_used = True
+                db.session.commit()
+                #return redirect ('http://localhost:5173/success')
+        else:
+            return jsonify({
+                "status" : False,
+                "message": "Link has been used"
+            })
     except:
         db.session.rollback()
-        return redirect ('http://localhost:5173/error')
+        return jsonify({
+            "status" : False,
+            "message": "Link has expired"
+        })
+        #return redirect ('http://localhost:5173/error')
         
         
 
