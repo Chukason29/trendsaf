@@ -54,14 +54,14 @@ def create_app(config_class=Config):
                       r"/auth/*": {
                           "origins": ["http://127.0.0.1:5173", "*"],
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
-                          "allow_headers": ["Content-Type", "Authorization", "true"], 
+                          "allow_headers": ["Content-Type", "Authorization", "true","X-CSRF-TOKEN"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
                         },
                         r"/signup/*": {
                           "origins": ["http://127.0.0.1:5173", "*"],
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
-                          "allow_headers": ["Content-Type", "Authorization", "true"], 
+                          "allow_headers": ["Content-Type", "Authorization", "true", "X-CSRF-TOKEN"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
                         }
