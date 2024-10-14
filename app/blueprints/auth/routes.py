@@ -223,7 +223,7 @@ def confirmation():
                   
             if not csrf_token_in_header or csrf_token_in_header != csrf_token_in_cookie:
                 abort(403)
-            
+            return f"csrf ={csrf_token_in_header}\n access-token = {csrf_token_in_cookie}"
             #making sure that jwt identity and session identity is same
             #if not session_id == id:
             #   abort(404)
