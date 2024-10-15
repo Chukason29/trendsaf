@@ -218,7 +218,7 @@ def confirmation():
 
             #TODO get the jwt token from the header and extract
             id = decode_id(get_jwt_identity())
-            return f"csrf ={csrf_token_in_header}\n access-token = {csrf_token_in_cookie}"
+            return f"csrf ={csrf_token_in_header}\n access_token = {csrf_token_in_cookie}"
 
             session_id = str(uuid.UUID(decode_id(session["user_uuid"])))
                   
