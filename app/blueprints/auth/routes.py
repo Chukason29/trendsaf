@@ -221,7 +221,9 @@ def confirmation():
 
 
             session_id = str(uuid.UUID(decode_id(session.get("user_uuid"))))
-            
+            return jsonify({
+                "session_id": session_id
+            })
             #making sure that jwt identity and session identity is same
             if not session_id == id:
                 abort(401)
