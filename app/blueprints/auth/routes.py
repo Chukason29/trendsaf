@@ -17,7 +17,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.before_request
 def before_request():
     session.permanent = True
-    auth_bp.permanent_session_lifetime = datetime.timedelta(hours=12) # session will be alive for 20 minutes
+    auth_bp.permanent_session_lifetime = datetime.timedelta(hours=12) # session will be alive for 12 hours
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -220,7 +220,7 @@ def confirmation():
             id = decode_id(get_jwt_identity())
 
 
-            session_id = str(uuid.UUID(decode_id(session["user_uuid"])))
+            session_id = str(uuid.UUID(decode_id(session.get("user_uuid"))))
             
             #making sure that jwt identity and session identity is same
             if not session_id == id:
