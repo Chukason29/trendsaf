@@ -218,7 +218,9 @@ def confirmation():
 
             #TODO get the jwt token from the header and extract
             id = decode_id(get_jwt_identity())
-            return f"csrf ={csrf_token_in_header}\n access_token = {csrf_token_in_cookie}"
+            return jsonify({
+                "id": id
+            })
 
             session_id = str(uuid.UUID(decode_id(session["user_uuid"])))
                   
@@ -227,7 +229,7 @@ def confirmation():
             
             #making sure that jwt identity and session identity is same
             if not session_id == id:
-                abort(404)
+                abort(401)
             
             
             user_profile = request.get_json()
