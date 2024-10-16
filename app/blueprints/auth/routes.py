@@ -267,7 +267,8 @@ def confirmation():
             mail.send(msg) 
             return jsonify({
                 "is_confirmed": True,
-                "message" : "user confirmed successfully"
+                "message" : "user confirmed successfully",
+                "status": 200
             })
         except Exception as e:
             db.session.rollback()

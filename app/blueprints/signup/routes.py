@@ -69,7 +69,6 @@ def registration(): # The hashed uuid value will be appended to the url link
                             verify_code=verify_code, 
                             verify_code_expires=verify_code_expiration
                         )
-                new_user.user_profile = Profile(user_id=Users.user_id)
                 #message to send to the user
             
                 
