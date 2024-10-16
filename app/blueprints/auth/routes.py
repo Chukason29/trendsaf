@@ -220,7 +220,7 @@ def confirmation():
             id = decode_id(get_jwt_identity())
 
             session_id = session.get("user_uuid")
-            return session_id
+            return str(session_id)
             #making sure that jwt identity and session identity is same
             if not session_id == id:
                 abort(401)
