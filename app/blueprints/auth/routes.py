@@ -219,7 +219,8 @@ def confirmation():
             #TODO get the jwt token from the header and extract
             id = decode_id(get_jwt_identity())
 
-            session_id = decode_id(session.get("user_uuid"))
+            session_id = session.get("user_uuid")
+            return session_id
             #making sure that jwt identity and session identity is same
             if not session_id == id:
                 abort(401)
