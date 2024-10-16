@@ -41,6 +41,8 @@ def create_app(config_class=Config):
     app.config.get(Config.JWT_ERROR_MESSAGE_KEY)
     app.config.get(Config.SECRET_KEY)
     app.config.get(Config.JWT_COOKIE_CSRF_PROTECT)
+    app.config.get(Config.SESSION_COOKIE_SAMESITE)
+    app.config.get(Config.SESSION_COOKIE_SECURE)
 
 
      # Initialize extensions with the app
