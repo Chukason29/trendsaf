@@ -78,7 +78,7 @@ def login():
             response.set_cookie('csrf_token', access_token, httponly=False)
 
             #creating session for user once verification is true                        
-            session["user_uuid"] = id
+            #session["user_uuid"] = id
 
             #checking if the user is confirmed 
             if user.is_confirmed == True:     
