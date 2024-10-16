@@ -48,7 +48,9 @@ def login():
                 "message" : "wrong email or password"
             })
         #TODO collected the uuid of the user encode it and use as the identity of the user in the JWT
-        id = encode_id(str(user.user_uuid))
+        
+        id = encode_id(str(user.user_uuid)) #user's uuid
+        user_id = user.user_id #user's id
         
         if user.is_verified == True:                 
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
@@ -80,11 +82,7 @@ def login():
             user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
             if user.is_confirmed == True:     
-                result = (db.session.query(Users, Profile)
-                            .join(Profile, Users.user_id == Profile.user_id)  # Join on user_id
-                            .filter(Users.user_uuid == user_uuid)  # Filter based on user_uuid
-                            .one_or_none()
-                        )
+                result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
                 #session["user_role"] = result.role
                 response =  jsonify({
                     "access_token": access_token,
