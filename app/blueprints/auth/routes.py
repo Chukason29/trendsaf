@@ -75,7 +75,7 @@ def login():
             )
 
             #Set CSRF token as a non-HttpOnly cookie
-            response.set_cookie('csrf_token', access_token, httponly=False)
+            #response.set_cookie('csrf_token', access_token, httponly=False)
 
             #creating session for user once verification is true                        
             session["user_uuid"] = id
@@ -217,14 +217,7 @@ def confirmation():
             csrf_token_in_header = request.headers.get('X-CSRF-TOKEN')
 
             #TODO get the jwt token from the header and extract
-            id = decode_id(get_jwt_identity())
-
-            session_id = session.get("user_uuid")
-            return str(session_id)
-            #making sure that jwt identity and session identity is same
-            if not session_id == id:
-                abort(401)
-            
+            id = decode_id(get_jwt_identity())            
             
             user_profile = request.get_json()
             
