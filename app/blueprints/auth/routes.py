@@ -77,17 +77,15 @@ def login():
             #Set CSRF token as a non-HttpOnly cookie
             #response.set_cookie('csrf_token', access_token, httponly=False)
 
-            #creating session for user once verification is true                        
-            session["user_uuid"] = id
-
+            user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
             if user.is_confirmed == True:     
                 result = (db.session.query(Users, Profile)
                             .join(Profile, Users.user_id == Profile.user_id)  # Join on user_id
-                            .filter(Users.user_uuid == id)  # Filter based on user_uuid
+                            .filter(Users.user_uuid == user_uuid)  # Filter based on user_uuid
                             .one_or_none()
                         )
-                session["user_role"] = result.role
+                #session["user_role"] = result.role
                 response =  jsonify({
                     "access_token": access_token,
                     "status": True,
