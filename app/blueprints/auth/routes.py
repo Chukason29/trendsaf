@@ -91,7 +91,7 @@ def login():
                     "status": True,
                     "is_verified": user.is_verified,
                     "is_confirmed": user.is_confirmed,
-                    "user_role" : result.company_role,
+                    "user_role" : jsonify(result.company_role),
                     "company_name": result.company_name,
                     "company_type" : result.company_type,
                     "company_size" : result.company_size,
