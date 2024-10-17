@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, abort, session, make_response
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_mail import Mail, Message
 from datetime import timedelta
-from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json
+from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link
 from ...models import Users, Profile
 from ...config import Config
 from ... import bcrypt, db, mail
@@ -51,6 +51,22 @@ def login():
         
         id = encode_id(str(user.user_uuid)) #user's uuid
         user_id = user.user_id #user's id
+        
+        if user.is_verified == False:
+             #creating a link to be sent to mail
+            link = generate_verification_link(email)
+            #TODO send mail to user
+            mail_message = "Click this link to verify your email address: " + link
+            msg = Message("Confirm Registration",
+                sender='victoralaegbu@gmail.com',
+                recipients=[email])  # Change to recipient's email
+            msg.body = mail_message
+            mail.send(msg)
+            
+            return jsonify({
+                "status": False,
+                "message": "Verification link sent"
+        })
         
         if user.is_verified == True:                 
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
@@ -271,3 +287,7 @@ def confirmation():
             raise
         finally:
             db.session.close()
+
+@auth_bp.route('/google_auth', methods = ['POST'])
+def google_auth():
+    return "Google_auth"

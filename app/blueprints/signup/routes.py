@@ -138,43 +138,35 @@ def verification(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/code_resend/<string:id>', methods=['GET', 'PATCH'])
-def code_resend(id):
+@signup_bp.route('/link_resend/', methods=['POST'])
+def link_resend(id):
     try:
-        decoded_uuid = uuid.UUID(decode_id(id))  
-        #get record of the user
-        user = Users.query.filter_by(user_uuid = decoded_uuid).first()
-        if request.method == "PATCH":
-            if user:
-                #TODO #specifically get the mail
-                user_email = user.email
-
-                #TODO generate a new code and new expiration time and assign them to their respective instances
-                user.verify_code = verify_code
-                user.verify_code_expires = verify_code_expiration
-
-                # Commit the changes
-                db.session.commit()
-
-                #TODO send code to the email
-                code_mail_message = "You requested for the confirmation code see it below <br>" + verify_code
-                msg = Message(
-                    "Confirm Registration",
-                    sender='victoralaegbu@gmail.com',
-                    recipients=[user_email]
-                )  # Change to recipient's email
-                msg.body = code_mail_message
-                mail.send(msg) 
-                return jsonify({"status": 200, "message": "code re-sent to email"})
-            else:
-                return jsonify({"message": "An unexpected error occured"})
+        #TODO get email and password from
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        if 'email' not in data:
+            abort(422)
+        email = request.json.get('email')
+        link = generate_verification_link(email)
+        #TODO send mail to user
+        mail_message = "Click this link to verify your email address: " + link
+        msg = Message("Confirm Registration",
+            sender='victoralaegbu@gmail.com',
+            recipients=[email])  # Change to recipient's email
+        msg.body = mail_message
+        mail.send(msg)
         
-
+        return jsonify({
+            "status": True,
+            "message": "Verification link sent"
+        })
     except Exception as e:
         db.session.rollback()
         return str(e)
     finally:
         db.session.close()
+
 
 
 @signup_bp.route('/confirm_email/<token>')
