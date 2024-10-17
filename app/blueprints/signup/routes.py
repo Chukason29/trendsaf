@@ -139,7 +139,7 @@ def verification(id):
         db.session.close()
 
 @signup_bp.route('/link_resend/', methods=['POST'])
-def link_resend(id):
+def link_resend():
     try:
         #TODO get email and password from
         data = request.get_json()
