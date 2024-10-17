@@ -148,6 +148,13 @@ def link_resend(id):
         if 'email' not in data:
             abort(422)
         email = request.json.get('email')
+        user = Users.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({
+                "status" : False,
+                "message" : "email not registered"
+            })
+        #generates links
         link = generate_verification_link(email)
         #TODO send mail to user
         mail_message = "Click this link to verify your email address: " + link
