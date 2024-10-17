@@ -81,20 +81,20 @@ def login():
 
             user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
-            if user.is_confirmed == True:     
+            if user.is_confirmed == True:  
+                  
                 result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
                 #session["user_role"] = result.role
                 response =  jsonify({
-                    "access_token": access_token,
                     "status": True,
-                    "is_verified": user.is_verified,
-                    "is_confirmed": user.is_confirmed,
-                    #"user_role" : jsonify(result.company_role),
-                    "company_name": result.company_name,
-                    "company_type" : result.company_type,
-                    "company_size" : result.company_size,
-                    "start_year": result.start_year,
-                    "province" : result.province
+                    "is_verified": result.Users.is_verified,
+                    "is_confirmed": result.Users.is_confirmed,
+                    "user_role" : result.Profile.company_role,
+                    "company_name": result.Profile.company_name,
+                    "company_type" : result.Profile.company_type,
+                    "company_size" : result.Profile.company_size,
+                    "start_year": result.Profile.start_year,
+                    "province" : result.Profile.province
                 })
 
             return response, 200
