@@ -57,6 +57,26 @@ def validate_verification_link(token):
         "message": "Email is verified",
         "email" : email
     })
+def generate_password_link(id):
+    token = timed_serializer.dumps(id, salt=Config.SECRET_KEY)
+    link = url_for('auth.pwd_link_verify', token=token, _external=True)
+    return {
+        "token": token,
+        "link" : link
+    }
+
+def validate_password_link(token):
+    try:
+        id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=600)  # 10 minutes
+        return jsonify({
+            "status": True
+        })
+    except SignatureExpired:
+        return jsonify({
+            "status": False,
+            "message": "Expired Link"
+        })
+        
 # Generate a reset token for password reset
 def generate_reset_token(user):
     timed_serializer = URLSafeTimedSerializer(Config.SECRET_KEY)

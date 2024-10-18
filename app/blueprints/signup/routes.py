@@ -75,8 +75,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                 #creating a link to be sent to mail
                 link = generate_verification_link(email)
                 
-                #TODO Instantiating an object of tokens
-                
+                #TODO Instantiating an object of tokens and store the link in th database
                 token = Tokens(token = link, is_token_used = False)
                 
                 #TODO persist info to the data
@@ -175,7 +174,6 @@ def link_resend():
         db.session.close()
 
 
-
 @signup_bp.route('/confirm_email/<token>')
 def confirm_email(token):
     try:
@@ -193,22 +191,12 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return jsonify({
-                "status" : True,
-                "message": "user verified"
-            })
+                return redirect('http://46.101.27.66:5001/verify_user?message=success')
         else:
-            return jsonify({
-                "status" : False,
-                "message": "Link has been used"
-            })
+            return redirect('http://46.101.27.66:5001/verify_error?message=link has been used')
     except:
         db.session.rollback()
-        return jsonify({
-            "status" : False,
-            "message": "Link has expired"
-        })
-        #return redirect ('http://localhost:5173/error')
+        return redirect('http://46.101.27.66:5001/verify_error?message=link has expired')
         
         
 

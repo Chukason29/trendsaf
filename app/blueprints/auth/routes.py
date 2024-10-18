@@ -1,9 +1,10 @@
-from flask import Blueprint, request, jsonify, abort, session, make_response
+from flask import Blueprint, request, jsonify, abort, session, make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_mail import Mail, Message
+from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
-from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link
-from ...models import Users, Profile
+from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
+from ...models import Users, Profile, Tokens
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -11,6 +12,7 @@ import jwt
 import html
 import secrets
 import datetime
+import json
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -126,72 +128,73 @@ def logout():
 @auth_bp.route('/password_reset_request', methods=['POST'])
 def password_reset_request():
     try:
-        #TODO get email from client
-        client_user = request.get_json()
-        if "email" not in client_user:
+        #TODO get email and password from
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        if 'email' not in data:
             abort(422)
-        
+        email = request.json.get('email')
 
-        #TODO query the db to get uuid for the user with email
-        user = Users.query.filter(client_user['email'] == Users.email).one_or_none()
+        #TODO checked if user exits
+        user = Users.query.filter_by(email=email).first()
         if user:
-            id = user.user_uuid
-
-            #TODO generate token 
+            id = str(user.user_uuid)
+            link = generate_password_link(id)
             
+            #TODO Instantiating an object of tokens and store the link in th database
+            token = Tokens(token = link['link'], is_token_used = False)
             
-            #TODO send token to the user's email
-            reser_url = f"https://trendsaf.co/reset-password?token={generate_reset_token(user)}"
-            mail_message = "Ur password reset link: " + reser_url
-            msg = Message("Password Reset",
+            #TODO send mail to user
+            mail_message = "Click this link to verify your email address: " + link['link']
+            msg = Message("Confirm Registration",
                 sender='victoralaegbu@gmail.com',
-                recipients=[client_user['email']])  # Change to recipient's email
+                recipients=[email])  # Change to recipient's email
             msg.body = mail_message
             mail.send(msg)
-
-            return ({"status":True, "message": "link sent successfully"}), 200
+            
+            
+            db.session.add(token)
+            db.session.commit()
+            return jsonify({
+                "status": True,
+                "message": "password link sent"
+            })  
         else:
-            return jsonify({"status":False, "message": "User does not exit"})
-               
+            return   jsonify({
+                "status": False,
+                "message": "error"
+            })                    
     except Exception as e:
-        raise
-    finally:
-        pass
+        db.session.rollback()
 
+
+@auth_bp.route('/pwd_link_verify/<token>', methods = ['POST', 'GET'])
+def pwd_link_verify(token):
+    try:
+        link = url_for('auth.pwd_link_verify', token=token, _external = True)
+        
+        #TODO querying token for usage
+        token_filter = Tokens.query.filter(and_(Tokens.token == link)).first()
+        if token_filter and token_filter.is_token_used==False:
+            response = validate_password_link(token).get_json()
+            if response['status'] == True:
+                token_filter.is_token_used = True
+                db.session.commit
+                return redirect(f"http://46.101.27.66:5001/password_change?token={token}")
+
+        else:
+            return redirect(f"http://46.101.27.66:5001/password_change_error?message=link has been used")
+    except:
+        db.session.rollback()
+        return jsonify({
+            "status" : False,
+            "message": "Link has expired"
+        })
 
 @auth_bp.route('/password_reset', methods=['POST'])
 def password_reset():
-    try:
-        #TODO Get the reset_token via http header from client
-        user = request.get_json()
-        if "token" not in user or "password" not in user:
-            abort(422)
-        token = user['token']
-        password = user["password"]
-
-        #TODO validate token
-        validate_response = validate_reset_token(token).get_json()
-        if "id" in validate_response:
-            
-            #decode the encoded uuid and convert it back to a UUID
-            user_uuid = uuid.UUID(decode_id(validate_response["id"]))
-
-            user = Users.query.filter_by(user_uuid=user_uuid).first()
-
-            #encrypt the password
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-            #update the user's passwor
-            user.password=hashed_password
-            db.session.commit()
-            return jsonify({"status": True, "message": "password changed successfully"})
-        else:     
-            return validate_reset_token(token)
-    except Exception as e:
-        db.session.rollback()
-        raise
-    finally:
-        db.session.close() 
+    return "Password"
 
 @auth_bp.route('/auth_access', methods=['POST'])
 @jwt_required()
