@@ -69,7 +69,8 @@ def validate_password_link(token):
     try:
         id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=600)  # 10 minutes
         return jsonify({
-            "status": True
+            "status": True,
+            "id": id
         })
     except SignatureExpired:
         return jsonify({

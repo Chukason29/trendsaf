@@ -169,7 +169,7 @@ def password_reset_request():
         db.session.rollback()
 
 
-@auth_bp.route('/pwd_link_verify/<token>', methods = ['POST', 'GET'])
+@auth_bp.route('/pwd_link_verify/<token>', methods = ['POST'])
 def pwd_link_verify(token):
     try:
         link = url_for('auth.pwd_link_verify', token=token, _external = True)
@@ -192,9 +192,46 @@ def pwd_link_verify(token):
             "message": "Link has expired"
         })
 
-@auth_bp.route('/password_reset', methods=['POST'])
-def password_reset():
-    return "Password"
+@auth_bp.route('/password_reset/<token>', methods=['POST'])
+def password_reset(token):
+    try:
+        #TODO extract the user uuid from the token
+        id = validate_password_link(token).get_json()
+        user_id = uuid.UUID(id['id'])
+        
+        #TODO Collect the new password
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        if 'password' not in data:
+            abort(422)
+        password = html.escape(request.json.get('password'))
+    
+        
+        #TODO query the user with the uuid
+        user = Users.query.filter(and_(Users.user_uuid == user_id)).first()       
+        
+        if user:
+            #TODO update the password
+            user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+            
+            db.session.commit()
+            return jsonify({
+                "status" : True,
+                "message": "password change is successful"
+            })
+        else:
+            return jsonify({
+                "status" : False,
+                "message": "password change is unsuccessful"
+            })
+        
+        #TODO return the appropriate value
+        pass
+    except Exception as e:
+        raise
+    finally:
+        pass
 
 @auth_bp.route('/auth_access', methods=['POST'])
 @jwt_required()
