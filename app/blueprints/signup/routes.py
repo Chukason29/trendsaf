@@ -191,21 +191,12 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return jsonify({
-                    "status" : True,
-                    "message": "Email verified successfully"
-                })
+                return redirect('http://46.101.27.66:5001/verify_user?message=success')
         else:
-            return jsonify({
-                "status" : False,
-                "message" : "link has been used"
-            })
+            return redirect('http://46.101.27.66:5001/verify_error?message=link has been used')
     except:
         db.session.rollback()
-        return  jsonify({
-                "status" : False,
-                "message" : "link has expired"
-            })
+        return redirect('http://46.101.27.66:5001/verify_error?message=link has expired')
         
         
 
