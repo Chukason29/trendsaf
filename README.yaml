@@ -1,33 +1,37 @@
-
+swagger: "2.0"
 info:
-  description: "API Documentation for User Registration, Authentication, and Profile Management"
+  description: "This is the API documentation for User Signup, Authentication, and Account Management."
   version: "1.0.0"
-  title: "Project API"
-host: "trendsaf production host"
-basePath: "/"
+  title: "User Management API"
+  termsOfService: "http://example.com/terms/"
+  contact:
+    email: "support@trendsaf.com"
+host: "api.trendsaf.com"
+basePath: "/v1"
 schemes:
+  - "http"
   - "https"
 paths:
   /signup/registration:
     post:
-      summary: "Register a new user"
-      description: "Registers a new user in the system"
+      summary: "Register new users"
+      description: "Endpoint for registering a new user"
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
         - in: "body"
-          name: "body"
-          description: "User registration data"
+          name: "user"
+          description: "New user details"
           required: true
           schema:
             type: "object"
             required:
-              - firstname
-              - lastname
-              - email
-              - password
+              - "firstname"
+              - "lastname"
+              - "email"
+              - "password"
             properties:
               firstname:
                 type: "string"
@@ -42,42 +46,6 @@ paths:
                 type: "string"
                 example: "12345"
       responses:
-        422:
-          description: "Missing parameter"
-          schema:
-            type: "object"
-            properties:
-              error:
-                type: "integer"
-                example: 422
-              message:
-                type: "string"
-                example: "missing parameter"
-              status:
-                type: "boolean"
-                example: false
-        400:
-          description: "Invalid email format"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "invalid email"
-        409:
-          description: "Email already exists"
-          schema:
-            type: "object"
-            properties:
-              exists:
-                type: "boolean"
-                example: true
-              is_verified:
-                type: "boolean"
-                example: false
-              message:
-                type: "string"
-                example: "Account with email already exists"
         200:
           description: "Successful registration"
           schema:
@@ -85,46 +53,14 @@ paths:
             properties:
               id:
                 type: "string"
-                example: "IjAyMjQwNDJmLTBhNjItNDI5YS1hM2E1LWI5ZTUyODNlNTY4NiI.4u8HnVUIzqT0Feh334fX2XX28lo"
               is_confirmed:
                 type: "boolean"
-                example: false
               is_verified:
                 type: "boolean"
-                example: false
               message:
                 type: "string"
-                example: "Registration successful"
               status:
                 type: "integer"
-                example: 200
-
-  /verification/{id}:
-    patch:
-      summary: "Verify a user"
-      description: "Verifies a user with a provided code"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "path"
-          name: "id"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "Verification code"
-          required: true
-          schema:
-            type: "object"
-            required:
-              - code
-            properties:
-              code:
-                type: "string"
-                example: "Yb785g1K"
-      responses:
         422:
           description: "Missing parameter"
           schema:
@@ -132,99 +68,94 @@ paths:
             properties:
               error:
                 type: "integer"
-                example: 422
               message:
                 type: "string"
-                example: "missing parameter"
               status:
                 type: "boolean"
-                example: false
-        401:
-          description: "Invalid code or unauthorized access"
+        400:
+          description: "Invalid email or email already exists"
           schema:
             type: "object"
             properties:
-              error:
-                type: "integer"
-                example: 401
-              message:
-                type: "string"
-                example: "unauthorized access"
-              status:
+              exists:
                 type: "boolean"
-                example: false
-        200:
-          description: "Verification successful"
-          schema:
-            type: "object"
-            properties:
-              is_confirmed:
-                type: "boolean"
-                example: false
               is_verified:
                 type: "boolean"
-                example: true
               message:
                 type: "string"
-                example: "verification successful"
-              status:
-                type: "string"
-                example: "verified"
 
-  /code_resend/{id}:
-    patch:
-      summary: "Resend verification code"
-      description: "Resends the verification code to the user's email"
+  /signup/link_resend:
+    post:
+      summary: "Resend verification link"
+      description: "Endpoint for resending verification link to users"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       parameters:
-        - in: "path"
-          name: "id"
+        - in: "body"
+          name: "email"
+          description: "Email to resend verification link"
           required: true
-          type: "string"
+          schema:
+            type: "object"
+            properties:
+              email:
+                type: "string"
+                example: "aphrodis@gmail.com"
       responses:
+        200:
+          description: "Verification link sent"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"
         405:
-          description: "Method not allowed"
+          description: "Invalid request method"
           schema:
             type: "object"
             properties:
               error:
                 type: "integer"
-                example: 405
               message:
                 type: "string"
-                example: "api call method not permitted"
               status:
                 type: "boolean"
-                example: false
-        200:
-          description: "Code resent"
+        400:
+          description: "Email not registered"
           schema:
             type: "object"
             properties:
+              status:
+                type: "boolean"
               message:
                 type: "string"
-                example: "code re-sent to email"
-              status:
-                type: "integer"
-                example: 200
 
   /auth/confirmation:
     post:
-      summary: "Confirm the user and add profile"
-      description: "Adds user profile data upon confirmation"
+      summary: "Confirm user profile"
+      description: "Endpoint for confirming user profile"
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
         - in: "header"
+          name: "Authorization"
+          description: "Bearer token for authorization"
+          required: true
+          type: "string"
+        - in: "header"
           name: "X-CSRF-TOKEN"
+          description: "CSRF token"
           required: true
           type: "string"
         - in: "body"
-          name: "body"
-          description: "User profile data"
+          name: "company_profile"
+          description: "User's company profile"
           required: true
           schema:
             type: "object"
@@ -249,23 +180,42 @@ paths:
                 type: "string"
       responses:
         200:
-          description: "User confirmed and profile added"
-  
+          description: "Profile confirmed successfully"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"
+        400:
+          description: "Invalid request"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"
+
   /auth/login:
     post:
-      summary: "Authenticate user"
-      description: "Login a user with email and password"
+      summary: "Login user"
+      description: "Endpoint for user authentication"
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
         - in: "body"
-          name: "body"
-          description: "User login data"
+          name: "login"
+          description: "User login credentials"
           required: true
           schema:
             type: "object"
+            required:
+              - "email"
+              - "password"
             properties:
               email:
                 type: "string"
@@ -274,46 +224,40 @@ paths:
                 type: "string"
                 example: "12345"
       responses:
-        400:
-          description: "Invalid email or password"
-          schema:
-            type: "object"
-            properties:
-              status:
-                type: "boolean"
-                example: false
-              message:
-                type: "string"
-                example: "wrong email or password"
         200:
-          description: "Login successful"
+          description: "Successful authentication"
           schema:
             type: "object"
             properties:
               status:
                 type: "boolean"
-                example: true
-              is_confirmed:
-                type: "boolean"
-                example: false
               is_verified:
                 type: "boolean"
-                example: true
+              is_confirmed:
+                type: "boolean"
               message:
                 type: "string"
-                example: "Not verified"
+        401:
+          description: "Wrong email or password"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"
 
   /auth/password_reset_request:
     post:
       summary: "Request password reset"
-      description: "Initiates password reset process"
+      description: "Endpoint for requesting password reset"
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
         - in: "body"
-          name: "body"
+          name: "email"
           description: "Email for password reset"
           required: true
           schema:
@@ -323,47 +267,65 @@ paths:
                 type: "string"
                 example: "nhamo@trendsaf.co"
       responses:
-        404:
-          description: "User not found"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "User does not exist"
-              status:
-                type: "boolean"
-                example: false
         200:
           description: "Password reset link sent"
           schema:
             type: "object"
             properties:
-              message:
-                type: "string"
-                example: "link sent successfully"
               status:
                 type: "boolean"
-                example: true
+              message:
+                type: "string"
+        400:
+          description: "User does not exist"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"
 
-  /auth/password_reset:
+  /auth/password_reset/{token}:
     post:
       summary: "Reset password"
-      description: "Allows user to reset password"
+      description: "Endpoint for resetting user password"
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
+        - in: "path"
+          name: "token"
+          required: true
+          type: "string"
+          description: "Password reset token"
         - in: "body"
-          name: "body"
-          description: "Password reset data"
+          name: "password"
+          description: "New password"
           required: true
           schema:
             type: "object"
             properties:
-              token:
-                type: "string"
-                example: "ImJmYmQ0Nzc2LTY5ZmUtNGY0Ni05YTgyLTUxMmNjMDkyNzc1OSI.ZvnWvg.rUkUIs4_8r0o4qD3cI9ny0t8oVU"
               password:
-                type:
+                type: "string"
+                example: "123456789"
+      responses:
+        200:
+          description: "Password changed successfully"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              status:
+                type: "boolean"
+        400:
+          description: "Password change failed"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "boolean"
+              message:
+                type: "string"

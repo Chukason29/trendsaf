@@ -163,7 +163,7 @@ def password_reset_request():
         else:
             return   jsonify({
                 "status": False,
-                "message": "error"
+                "message": "user does not exist"
             })                    
     except Exception as e:
         db.session.rollback()
