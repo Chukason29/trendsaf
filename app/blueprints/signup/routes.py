@@ -191,15 +191,13 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect('http://46.101.27.66:5001/verify_user?message=success')
+                return redirect('http://46.101.27.66:5001/confirm_email?status=True&?message=success')
         else:
-            return redirect('http://46.101.27.66:5001/verify_error?message=link has been used')
+            return redirect('http://46.101.27.66:5001/confirm_email?status=False&?message=link has been used')
     except:
         db.session.rollback()
-        return redirect('http://46.101.27.66:5001/verify_error?message=link has expired')
+        return redirect('http://46.101.27.66:5001/confirm_email?status=False&?message=link has expired')
         
-        
-
 @signup_bp.route('/')
 def index():
     return "Hello World"
