@@ -181,7 +181,7 @@ def pwd_link_verify(token):
             if response['status'] == True:
                 token_filter.is_token_used = True
                 db.session.commit
-                return redirect(f"http://localhost:5001/password_change?token={token}")
+                return redirect(f"http://localhost:5001/reset_password/{token}")
 
         else:
             return redirect(f"http://localhost:5001/password_change_error?message=link has been used")
