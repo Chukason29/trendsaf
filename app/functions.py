@@ -7,7 +7,7 @@ import os
 import hashlib
 import json
 import uuid
-from flask import request, jsonify, abort, url_for, redirect
+from flask import request, jsonify, abort, url_for
 from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, SignatureExpired, BadSignature
 from .config import Config
 
@@ -44,9 +44,12 @@ def generate_verification_link(email):
 
 def validate_verification_link(token):
     try:
-        email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=30)  # 1-hour expiration
+        email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=3600)  # 1-hour expiration
     except SignatureExpired:
-        return redirect(f"http://localhost:5001/reset_password_error?message=link has expired")
+        return jsonify({
+            "status": False,
+            "message": "Expired Link"
+        })
     return jsonify({
         "status": True,
         "message": "Email is verified",
@@ -62,7 +65,7 @@ def generate_password_link(id):
 
 def validate_password_link(token):
     try:
-        id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=900)  # 15 minutes
+        id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=7)  # 15 minutes
         return jsonify({
             "status": True,
             "id": id
