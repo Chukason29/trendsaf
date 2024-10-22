@@ -169,7 +169,7 @@ def password_reset_request():
         db.session.rollback()
 
 
-@auth_bp.route('/pwd_link_verify/<token>', methods = ['POST'])
+@auth_bp.route('/pwd_link_verify/<token>', methods = ['POST', 'GET'])
 def pwd_link_verify(token):
     try:
         link = url_for('auth.pwd_link_verify', token=token, _external = True)
