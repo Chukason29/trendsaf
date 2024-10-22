@@ -182,7 +182,8 @@ def pwd_link_verify(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 return redirect(f"http://localhost:5001/reset_password/{token}")
-
+            else:
+                return redirect(f"http://localhost:5001/reset_password_error?message=link has expired")
         else:
             return redirect(f"http://localhost:5001/reset_password_error?message=link has been used")
     except:
