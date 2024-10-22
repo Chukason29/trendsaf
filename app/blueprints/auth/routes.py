@@ -187,10 +187,7 @@ def pwd_link_verify(token):
             return redirect(f"http://localhost:5001/password_change_error?message=link has been used")
     except:
         db.session.rollback()
-        return jsonify({
-            "status" : False,
-            "message": "Link has expired"
-        })
+        return redirect(f"http://localhost:5001/password_change_error?message=link has expired")
 
 @auth_bp.route('/password_reset/<token>', methods=['POST'])
 def password_reset(token):
