@@ -180,7 +180,7 @@ def pwd_link_verify(token):
             response = validate_password_link(token).get_json()
             if response['status'] == True:
                 token_filter.is_token_used = True
-                db.session.commit
+                db.session.commit()
                 return redirect(f"http://localhost:5001/reset_password/{token}")
 
         else:
