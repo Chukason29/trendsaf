@@ -181,14 +181,14 @@ def pwd_link_verify(token):
             if response['status'] == True:
                 token_filter.is_token_used = True
                 db.session.commit()
-                return redirect(f"http://localhost:5001/reset_password/{token}")
+                return redirect(f"{Config.BASE_URL}/reset_password/{token}")
             else:
-                return redirect(f"http://localhost:5001/reset_password_error?message=link has expired")
+                return redirect(f"{Config.BASE_URL}/reset_password_error?message=link has expired")
         else:
-            return redirect(f"http://localhost:5001/reset_password_error?message=link has been used")
+            return redirect(f"{Config.BASE_URL}/reset_password_error?message=link has been used")
     except:
         db.session.rollback()
-        return redirect(f"http://localhost:5001/reset_password_error?message=link has expired")
+        return redirect(f"{Config.BASE_URL}/reset_password_error?message=link has expired")
 
 @auth_bp.route('/password_reset/<token>', methods=['POST'])
 def password_reset(token):
