@@ -65,7 +65,7 @@ def generate_password_link(id):
 
 def validate_password_link(token):
     try:
-        id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=7)  # 15 minutes
+        id = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=900)  # 15 minutes
         return jsonify({
             "status": True,
             "id": id
