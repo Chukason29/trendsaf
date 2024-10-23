@@ -137,7 +137,7 @@ def verification(id):
     finally:
         db.session.close()
 
-@signup_bp.route('/link_resend/', methods=['POST'])
+@signup_bp.route('/link_resend', methods=['POST'])
 def link_resend():
     try:
         #TODO get email and password from
@@ -153,8 +153,14 @@ def link_resend():
                 "status" : False,
                 "message" : "email not registered"
             })
-        #generates links
+        #generates link
         link = generate_verification_link(email)
+        
+        #persists token to the database
+        token = Tokens(token = link, is_token_used = False)
+        db.session.add(token)
+        db.session.commit()
+        
         #TODO send mail to user
         mail_message = "Click this link to verify your email address: " + link
         msg = Message("Confirm Registration",
