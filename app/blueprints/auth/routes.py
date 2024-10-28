@@ -81,8 +81,6 @@ def login():
             csrf_token = secrets.token_hex(16)
             response = jsonify({
                     "status": True,
-                    "is_verified": user.is_verified,
-                    "is_confirmed": user.is_confirmed,
                     "access_token": access_token,
                 })
             #Set access_token as an HttpOnly cookie
