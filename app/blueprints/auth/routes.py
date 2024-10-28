@@ -105,6 +105,7 @@ def login():
                 #session["user_role"] = result.role
                 response =  jsonify({
                     "status": True,
+                    "access_token": access_token,
                     "is_verified": result.Users.is_verified,
                     "is_confirmed": result.Users.is_confirmed,
                     "user_role" : result.Profile.company_role,
