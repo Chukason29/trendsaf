@@ -74,7 +74,8 @@ def login():
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(minutes=600)
+                expires_delta=timedelta(minutes=600),
+                additional_claims=({"is_confirmed": user.is_confirmed})
             )
             #TODO create a crsf token and set it as a coookie
             csrf_token = secrets.token_hex(16)
@@ -96,7 +97,12 @@ def login():
 
             user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
-            if user.is_confirmed == True:                  
+            if user.is_confirmed == True:
+                access_token = create_access_token(
+                identity=id,
+                expires_delta=timedelta(minutes=6000),
+                additional_claims=({"is_confirmed": user.is_confirmed})
+            )                 
                 result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
                 #session["user_role"] = result.role
                 response =  jsonify({
