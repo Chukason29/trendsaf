@@ -97,7 +97,12 @@ def login():
 
             user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
-            if user.is_confirmed == True:  
+            if user.is_confirmed == True:
+                access_token = create_access_token(
+                identity=id,
+                expires_delta=timedelta(minutes=600),
+                additional_claims=({"is_confirmed": user.is_confirmed})
+            )
                   
                 result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
                 #session["user_role"] = result.role
