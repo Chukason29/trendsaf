@@ -97,12 +97,7 @@ def login():
 
             user_uuid = uuid.UUID(decode_id(id))
             #checking if the user is confirmed 
-            if user.is_confirmed == True:
-                access_token = create_access_token(
-                identity=id,
-                expires_delta=timedelta(minutes=6000),
-                additional_claims=({"is_confirmed": user.is_confirmed})
-            )                 
+            if user.is_confirmed == True:             
                 result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
                 #session["user_role"] = result.role
                 response =  jsonify({
@@ -295,6 +290,8 @@ def confirmation():
             #TODO collect and assign user's id and email
             user_id = user_query.user_id
             user_email = user_query.email
+            firstname = user_query.firstname
+            lastname = user_query.lastname
 
             #TODO send data to the database
             user_query.is_confirmed = True #updating is_confirmed column
@@ -317,12 +314,42 @@ def confirmation():
             sender='victoralaegbu@gmail.com',
             recipients=[user_email])  # Change to recipient's email
             msg.body = message
-            mail.send(msg) 
-            return jsonify({
+            mail.send(msg)
+            access_token = create_access_token(
+                identity=id,
+                expires_delta=timedelta(minutes=600),
+                additional_claims=(
+                    {
+                        "is_confirmed": True,
+                        "is_verified" : True,
+                        "firstname" : firstname,
+                        "lastname" : lastname,
+                        "email" : user_email,
+                        "company_name":company_name,
+                        "company_type":company_type,
+                        "company_size":company_size,
+                        "start_year":start_year,
+                        "annual_revenue":annual_revenue,
+                        "company_role":company_role,
+                        "phone":phone,
+                        "province":province  
+                    }
+                )
+            )
+            response =  jsonify({
                 "is_confirmed": True,
                 "message" : "user confirmed successfully",
                 "status": 200
             })
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,  # Prevents JavaScript access
+                secure=False,    # Use True if using HTTPS
+                samesite='None' # Change based on your requirements
+            )
+            return response, 200
+            
         except Exception as e:
             db.session.rollback()
             raise
