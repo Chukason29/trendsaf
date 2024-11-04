@@ -95,7 +95,7 @@ def login():
                 "province" : result.Profile.province
             })
             #delete previous cookie
-            #response.set_cookie('access_token', '', expires=0)
+            response.delete_cookie('access_token')
             #Set access_token as an HttpOnly cookie
             response.set_cookie(
                 'access_token',
@@ -386,13 +386,13 @@ def confirmation():
                 "status": 200
             })
             response.delete_cookie('access_token')
-            '''response.set_cookie(
+            response.set_cookie(
                 'access_token',
                 access_token,
                 httponly=True,  # Prevents JavaScript access
                 secure=False,    # Use True if using HTTPS
                 samesite='None' # Change based on your requirements
-            )'''
+            )
             return response, 200
             
         except Exception as e:
