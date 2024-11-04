@@ -85,14 +85,6 @@ def login():
             response =  jsonify({
                 "auth_token" : access_token,
                 "status": True,
-                "is_verified": result.Users.is_verified,
-                "is_confirmed": result.Users.is_confirmed,
-                "user_role" : result.Profile.company_role,
-                "company_name": result.Profile.company_name,
-                "company_type" : result.Profile.company_type,
-                "company_size" : result.Profile.company_size,
-                "start_year": result.Profile.start_year,
-                "province" : result.Profile.province
             })
             #delete previous cookie
             response.delete_cookie('access_token')
