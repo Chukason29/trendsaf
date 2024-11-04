@@ -64,22 +64,6 @@ def login():
             )
             #TODO create a crsf token and set it as a coookie
             csrf_token = secrets.token_hex(16)
-            response = jsonify({
-                    "status": True,
-                    "access_token": access_token,
-                })
-            #delete previous cookie
-            #response.set_cookie('access_token', '', expires=0)
-            #Set access_token as an HttpOnly cookie
-            response.set_cookie(
-                'access_token',
-                access_token,
-                httponly=True,  # Prevents JavaScript access
-                secure=False,    # Use True if using HTTPS
-                samesite='None' # Change based on your requirements
-            )
-            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
-            #session["user_role"] = result.role
             response =  jsonify({
                 "status": True,
                 "access_token": access_token,
@@ -92,6 +76,18 @@ def login():
                 "start_year": result.Profile.start_year,
                 "province" : result.Profile.province
             })
+            #delete previous cookie
+            #response.set_cookie('access_token', '', expires=0)
+            #Set access_token as an HttpOnly cookie
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,  # Prevents JavaScript access
+                secure=False,    # Use True if using HTTPS
+                samesite='None' # Change based on your requirements
+            )
+            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
+            #session["user_role"] = result.role
 
             return response, 200
             
