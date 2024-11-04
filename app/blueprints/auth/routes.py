@@ -286,7 +286,7 @@ def password_reset(token):
     finally:
         pass
 
-@auth_bp.route('/auth_access/<token>', methods=['POST'])
+@auth_bp.route('/auth_access', methods=['POST'])
 @jwt_required()
 def auth_access():
     try:
