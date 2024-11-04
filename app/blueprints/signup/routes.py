@@ -84,12 +84,12 @@ def registration(): # The hashed uuid value will be appended to the url link
                 db.session.commit()
                 
                 
-                verify_email_message = f"""<!DOCTYPE html>
+                verify_email_message = f"<!DOCTYPE html>
                         <html lang='en'>
                         <head>
                             <meta charset='UTF-8'>
                             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                            <link rel="stylesheet" href='{Config.BASE_URL}/signup/style.css'>
+                            <link rel='stylesheet' href='{Config.BASE_URL}/signup/style.css'>
                             <title>BaseFood Email Verification</title>
                             <style>
                                 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
@@ -112,7 +112,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                                 <p>&copy; 2024 trendsAf. All rights reserved.</p>
                             </div>
                         </body>
-                        </html>"""
+                        </html>"
                 #TODO send mail to user
                 #verify_mail_message = f""
                 msg = Message("Email verification",
