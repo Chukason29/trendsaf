@@ -53,6 +53,8 @@ def login():
         
         id = encode_id(str(user.user_uuid)) #user's uuid
         user_id = user.user_id #user's id
+        
+        # When user is both verified and confirmed
         if user.is_verified == True and  user.is_confirmed == True:
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
@@ -266,24 +268,12 @@ def password_reset(token):
     finally:
         pass
 
-@auth_bp.route('/auth_access', methods=['POST'])
+@auth_bp.route('/auth_access/<token>', methods=['POST'])
 @jwt_required()
 def auth_access():
     try:
-        #TODO Get the CSRF token from the request
-        csrf_token_in_cookie = request.cookies.get('csrf_token')
-        csrf_token_in_header = request.headers.get('X-CSRF-TOKEN')
-
-        if not csrf_token_in_header or csrf_token_in_header != csrf_token_in_cookie:
-            abort(403)
-        #TODO get the jwt token from the header and extract
         id = uuid.UUID(decode_id(get_jwt_identity()))
-        result = (
-        db.session.query(Users, Profile)
-            .join(Profile, Users.user_id == Profile.user_id)  # Join on user_id
-            .filter(Users.user_uuid == id)  # Filter based on user_uuid
-            .one_or_none()
-        )
+        
         return jsonify(result)
     except Exception as e:
         return str(e)
@@ -354,7 +344,7 @@ def confirmation():
             mail.send(msg)
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(minutes=600),
+                expires_delta=timedelta(hours = 24),
                 additional_claims=(
                     {
                         "is_confirmed": True,
@@ -378,6 +368,7 @@ def confirmation():
                 "message" : "user confirmed successfully",
                 "status": 200
             })
+            response.set_cookie('access_token', '', expires=0)
             response.set_cookie(
                 'access_token',
                 access_token,
