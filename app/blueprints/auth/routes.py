@@ -372,7 +372,7 @@ def confirmation():
                 "message" : "user confirmed successfully",
                 "status": 200
             })
-            response.set_cookie('access_token', '', expires=0)
+            #response.set_cookie('access_token', '', expires=0)
             response.set_cookie(
                 'access_token',
                 access_token,
