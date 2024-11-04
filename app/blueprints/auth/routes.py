@@ -331,8 +331,9 @@ def confirmation():
             user_query = Users.query.filter_by(user_uuid = decoded_uuid).first()
 
             #TODO collect and assign user's id and email
-            user_id = user_query.user_id
+            #user_id = user_query.user_id
             user_email = user_query.email
+            return user_email
             firstname = user_query.firstname
             lastname = user_query.lastname
 
