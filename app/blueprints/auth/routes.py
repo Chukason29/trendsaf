@@ -274,7 +274,7 @@ def auth_access():
     try:
         id = uuid.UUID(decode_id(get_jwt_identity()))
         
-        return jsonify(result)
+        return jsonify()
     except Exception as e:
         return str(e)
     
