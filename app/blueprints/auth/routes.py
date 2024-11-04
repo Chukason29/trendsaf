@@ -379,6 +379,7 @@ def confirmation():
                 )
             )
             response =  jsonify({
+                "auth_token" : access_token,
                 "is_confirmed": True,
                 "message" : "user confirmed successfully",
                 "status": 200
