@@ -88,7 +88,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                 html_content = render_template("email_verification.html", link=link, firstname=firstname)
                 #TODO send mail to user
                 #verify_mail_message = f""
-                msg = Message("Email verification",
+                msg = Message("BaseFood Email verification",
                     sender='victoralaegbu@gmail.com',
                     recipients=[email])  # Change to recipient's email
                 msg.html = html_content  # Set HTML content for email
