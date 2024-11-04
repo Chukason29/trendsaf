@@ -97,7 +97,7 @@ def login():
             response.delete_cookie('access_token')
             #Set access_token as an HttpOnly cookie
             response.set_cookie(
-                'access_token',
+                'auth_token',
                 access_token,
                 httponly=True,  # Prevents JavaScript access
                 secure=False,    # Use True if using HTTPS
