@@ -368,7 +368,7 @@ def confirmation():
                 "message" : "user confirmed successfully",
                 "status": 200
             })
-            response.delete_cookie('access_token', '', expires=0)
+            response.delete_cookie('access_token')
             '''response.set_cookie(
                 'access_token',
                 access_token,
