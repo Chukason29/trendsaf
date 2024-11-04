@@ -38,6 +38,7 @@
             text-decoration: none;
             border-radius: 5px;
             margin-top: 20px;
+            cursor: pointer;
         }
         .footer {
             text-align: center;
@@ -51,14 +52,14 @@
 </head>
 <body>
     <div class='header'>
-        <img src='./basefood_logo.png' alt='BaseFood Logo' style='max-width: 200px;'>
+        <img src="https://i.ibb.co/56TGnK5/basefood-logo.png" alt="basefood-logo" border="0">
     </div>
     <div class='content'>
         <h2>Hello {{firstname}},</h2>
         <p>Welcome to baseFood! Please verify your email address by clicking the button below:</p>
         <a href='{{link}}' target='_blank' class='button'>Verify Email</a>
         <p>If the button above doesn't work, you can also click on the link below or copy and paste it into your browser:</p>
-        <p><a href='{{link}}' target='_blank'>[Verification_Link]</a></p>
+        <p><a href='{{link}}' target='_blank'>{{link}}</a></p>
         <p>If you didn't create an account with baseFood, please ignore this email.</p>
     </div>
     <div class='footer'>
