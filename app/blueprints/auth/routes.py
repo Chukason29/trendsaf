@@ -328,7 +328,7 @@ def confirmation():
             #TODO converting id to proper uuid and assign to a variable
             decoded_uuid = uuid.UUID(id)
 
-            return decoded_uuid
+            return str(decoded_uuid)
             user_query = Users.query.filter_by(user_uuid = decoded_uuid).first()
 
             #TODO collect and assign user's id and email
