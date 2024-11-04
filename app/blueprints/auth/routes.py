@@ -328,11 +328,11 @@ def confirmation():
             #TODO converting id to proper uuid and assign to a variable
             decoded_uuid = uuid.UUID(id)
 
-            return str(decoded_uuid)
             user_query = Users.query.filter_by(user_uuid = decoded_uuid).first()
 
             #TODO collect and assign user's id and email
             user_id = user_query.user_id
+            return str(user_id)
             user_email = user_query.email
             firstname = user_query.firstname
             lastname = user_query.lastname
