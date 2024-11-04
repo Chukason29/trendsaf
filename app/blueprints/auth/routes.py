@@ -53,7 +53,44 @@ def login():
         
         id = encode_id(str(user.user_uuid)) #user's uuid
         user_id = user.user_id #user's id
-        
+        if user.is_verified == True and  user.is_confirmed == True:
+            #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
+            access_token = create_access_token(
+                identity=id,
+                expires_delta=timedelta(hours=24),
+                additional_claims=({"is_confirmed": user.is_confirmed})
+            )
+            #TODO create a crsf token and set it as a coookie
+            csrf_token = secrets.token_hex(16)
+            response = jsonify({
+                    "status": True,
+                    "access_token": access_token,
+                })
+            #Set access_token as an HttpOnly cookie
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,  # Prevents JavaScript access
+                secure=False,    # Use True if using HTTPS
+                samesite='None' # Change based on your requirements
+            )
+            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
+            #session["user_role"] = result.role
+            response =  jsonify({
+                "status": True,
+                "access_token": access_token,
+                "is_verified": result.Users.is_verified,
+                "is_confirmed": result.Users.is_confirmed,
+                "user_role" : result.Profile.company_role,
+                "company_name": result.Profile.company_name,
+                "company_type" : result.Profile.company_type,
+                "company_size" : result.Profile.company_size,
+                "start_year": result.Profile.start_year,
+                "province" : result.Profile.province
+            })
+
+            return response, 200
+            
         if user.is_verified == False:
              #creating a link to be sent to mail
             link = generate_verification_link(email)
@@ -74,7 +111,7 @@ def login():
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(minutes=600),
+                expires_delta=timedelta(hours=24),
                 additional_claims=({"is_confirmed": user.is_confirmed})
             )
             #TODO create a crsf token and set it as a coookie
