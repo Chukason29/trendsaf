@@ -83,6 +83,7 @@ def login():
             csrf_token = secrets.token_hex(16)
             result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
             response =  jsonify({
+                "auth_token" : access_token,
                 "status": True,
                 "is_verified": result.Users.is_verified,
                 "is_confirmed": result.Users.is_confirmed,
