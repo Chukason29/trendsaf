@@ -372,14 +372,14 @@ def confirmation():
                 "message" : "user confirmed successfully",
                 "status": 200
             })
-            #response.set_cookie('access_token', '', expires=0)
-            response.set_cookie(
+            response.delete_cookie('access_token', '', expires=0)
+            '''response.set_cookie(
                 'access_token',
                 access_token,
                 httponly=True,  # Prevents JavaScript access
                 secure=False,    # Use True if using HTTPS
                 samesite='None' # Change based on your requirements
-            )
+            )'''
             return response, 200
             
         except Exception as e:
