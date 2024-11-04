@@ -60,7 +60,7 @@ def login():
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(hours=24),
+                expires_delta=timedelta(seconds=20),
                 additional_claims=(
                     {
                         "is_confirmed": True,
@@ -293,12 +293,10 @@ def auth_access():
         id = uuid.UUID(decode_id(get_jwt_identity()))
         
         return jsonify({
-            "id": id
+            "message": 'success'
         })
     except Exception as e:
-        return str(e)
-    
-    return result
+        raise
 
 
 @auth_bp.route('/confirmation', methods=["POST"])
