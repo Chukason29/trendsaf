@@ -68,6 +68,8 @@ def login():
                     "status": True,
                     "access_token": access_token,
                 })
+            #delete previous cookie
+            response.set_cookie('access_token', '', expires=0)
             #Set access_token as an HttpOnly cookie
             response.set_cookie(
                 'access_token',
@@ -274,7 +276,9 @@ def auth_access():
     try:
         id = uuid.UUID(decode_id(get_jwt_identity()))
         
-        return jsonify()
+        return jsonify({
+            "id": id
+        })
     except Exception as e:
         return str(e)
     
