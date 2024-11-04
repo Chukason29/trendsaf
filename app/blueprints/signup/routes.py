@@ -9,6 +9,7 @@ from ...functions import encode_id, decode_id, is_json, is_valid_email, verify_c
 from itsdangerous import URLSafeSerializer
 from sqlalchemy import Column, Integer, String, and_
 from flask_mail import Mail, Message
+from email_bodies import verify_email_message
 import re
 import random
 import string
@@ -86,11 +87,11 @@ def registration(): # The hashed uuid value will be appended to the url link
                 
 
                 #TODO send mail to user
-                mail_message = "Click this link to verify your email address: " + link
-                msg = Message("Confirm Registration",
+                #verify_mail_message = f""
+                msg = Message("Email verification",
                     sender='victoralaegbu@gmail.com',
                     recipients=[email])  # Change to recipient's email
-                msg.body = mail_message
+                msg.body = verify_email_message
                 mail.send(msg)
 
                 #TODO return a json object
