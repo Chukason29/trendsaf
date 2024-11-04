@@ -56,11 +56,28 @@ def login():
         
         # When user is both verified and confirmed
         if user.is_verified == True and  user.is_confirmed == True:
+            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
                 expires_delta=timedelta(hours=24),
-                additional_claims=({"is_confirmed": user.is_confirmed})
+                additional_claims=(
+                    {
+                        "is_confirmed": True,
+                        "is_verified" : True,
+                        "firstname" : result.Users.firstname,
+                        "lastname" : result.Users.lastname,
+                        "email" : result.Users.email,
+                        "is_verified": result.Users.is_verified,
+                        "is_confirmed": result.Users.is_confirmed,
+                        "user_role" : result.Profile.company_role,
+                        "company_name": result.Profile.company_name,
+                        "company_type" : result.Profile.company_type,
+                        "company_size" : result.Profile.company_size,
+                        "start_year": result.Profile.start_year,
+                        "province" : result.Profile.province 
+                    }
+                )
             )
             #TODO create a crsf token and set it as a coookie
             csrf_token = secrets.token_hex(16)
