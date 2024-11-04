@@ -60,7 +60,7 @@ def login():
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(seconds=20),
+                expires_delta=timedelta(hours=24),
                 additional_claims=(
                     {
                         "is_confirmed": True,
@@ -84,7 +84,6 @@ def login():
             result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
             response =  jsonify({
                 "status": True,
-                "access_token": access_token,
                 "is_verified": result.Users.is_verified,
                 "is_confirmed": result.Users.is_confirmed,
                 "user_role" : result.Profile.company_role,
