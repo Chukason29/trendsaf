@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, abort, redirect, url_for
+from flask import Blueprint, request, jsonify, abort, redirect, url_for, render_template
 from ...models import Users, Profile, Tokens
 from ...config import Config
 from ... import db
@@ -84,13 +84,14 @@ def registration(): # The hashed uuid value will be appended to the url link
                 db.session.commit()
                 
                 
-                verify_email_message = "<strong>You are</strong> great"
+                # Render HTML template
+                html_content = render_template("email_verification.html", name="John Doe")
                 #TODO send mail to user
                 #verify_mail_message = f""
                 msg = Message("Email verification",
                     sender='victoralaegbu@gmail.com',
                     recipients=[email])  # Change to recipient's email
-                msg.body = verify_email_message
+                msg.html = html_content  # Set HTML content for email
                 mail.send(msg)
 
                 #TODO return a json object
