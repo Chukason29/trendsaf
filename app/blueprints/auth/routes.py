@@ -111,6 +111,9 @@ def login():
         if user.is_verified == False:
              #creating a link to be sent to mail
             link = generate_verification_link(email)
+            token = Tokens(token = link, is_token_used = False)
+            db.session.add(token)
+            db.session.commit()
             #TODO send mail to user
             mail_message = "Click this link to verify your email address: " + link
             msg = Message("Confirm Registration",
@@ -122,7 +125,7 @@ def login():
             return jsonify({
                 "status": False,
                 "message": "Verification link sent"
-        })
+            })
         
         if user.is_verified == True:                 
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
