@@ -69,7 +69,7 @@ def login():
                     "access_token": access_token,
                 })
             #delete previous cookie
-            response.set_cookie('access_token', '', expires=0)
+            #response.set_cookie('access_token', '', expires=0)
             #Set access_token as an HttpOnly cookie
             response.set_cookie(
                 'access_token',
