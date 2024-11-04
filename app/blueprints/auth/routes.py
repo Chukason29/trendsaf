@@ -64,6 +64,7 @@ def login():
             )
             #TODO create a crsf token and set it as a coookie
             csrf_token = secrets.token_hex(16)
+            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
             response =  jsonify({
                 "status": True,
                 "access_token": access_token,
@@ -86,7 +87,6 @@ def login():
                 secure=False,    # Use True if using HTTPS
                 samesite='None' # Change based on your requirements
             )
-            result = db.session.query(Users, Profile).join(Profile).filter(Users.user_id == user_id).first()
             #session["user_role"] = result.role
 
             return response, 200
