@@ -65,8 +65,11 @@ def addcrop():
 def addcountry():
     try:
         id = uuid.UUID(decode_id(get_jwt_identity()))
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query:
+        if user_query and user_data['company_role'] == "Z":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -84,10 +87,12 @@ def addcountry():
             db.session.add(new_country)
             db.session.commit()
             
-            return ({
+            return jsonify({
                 "status": True,
                 "message": "New country added"
             })
+        else:
+            abort(403)
     except:
         db.session.rollback()
         raise
