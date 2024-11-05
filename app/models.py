@@ -123,7 +123,6 @@ class Countries(db.Model):
 class Regions(db.Model):
     __tablename__ = "regions"
     region_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    country_id = db.Column(db.Integer, db.ForeignKey('countries.countries_id'))
-    country_name = db.Column(db.String(100), nullable=False)
-    country_code = db.Column(db.String(5), nullable=False)
+    country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
+    region_name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))

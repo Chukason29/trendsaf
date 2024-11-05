@@ -47,3 +47,35 @@ def addcrop():
         db.session.rollback()
         raise
     
+
+@admin_bp.route('/addcountry', methods=['POST'])
+@jwt_required()
+def addcrop():
+    try:
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        if user_query:
+            data = request.get_json()
+            if not is_json(data):
+                abort(415)
+            if 'country_name' not in data or 'country_code' not in data:
+                abort(422)
+            country_name = request.json.get('country_name')
+            is_crop_exists= Crops.query.filter_by(country_name = country_name).first()
+            if is_crop_exists :
+                return jsonify({
+                    "status": False,
+                    "message" : "Crop name already exists"
+                })
+            new_crop = Crops(country_name = country_name)
+            db.session.add(new_crop)
+            db.session.commit()
+            
+            return ({
+                "status": True,
+                "message": "New crop added"
+            })
+    except:
+        db.session.rollback()
+        raise
+    
