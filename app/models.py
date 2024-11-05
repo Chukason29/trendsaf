@@ -41,7 +41,6 @@ class Profile(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC')) 
 
 
-
 class OAuthProvider(db.Model):
     __tablename__ = 'oauth_providers'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,6 +48,7 @@ class OAuthProvider(db.Model):
     client_id = db.Column(db.String(100), nullable=True)
     client_secret = db.Column(db.String(100), nullable=False)
     redirect_uri = db.Column(db.String(200), nullable=False)
+
 
 class OAuthAccount(db.Model):
     __tablename__ = 'oauth_accounts'
@@ -59,6 +59,7 @@ class OAuthAccount(db.Model):
     provider_user_id = db.Column(db.String(100), nullable=False)  # User ID from the OAuth provider
     access_token = db.Column(db.String(200))  # Optional: for making API calls
     refresh_token = db.Column(db.String(200))  # Optional: for refreshing access token
+
 
 class PasswordTable(db.Model):
     __tablename__ = "passwordtable"
@@ -81,9 +82,33 @@ class LoginTable(db.Model):
     timestamp = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     expires_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
+    
 class Tokens(db.Model):
     __tablename__ = "tokens"
     token_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(1000), nullable=False)
     is_token_used = db.Column(db.Boolean, default=False)
 
+class Crops(db.Model):
+    __tablename__ = "crops"
+    crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_name = db.Column(db.String(50), nullable=False)
+    crop_cat = db.relationship('CropCategories', backref="cropcategories", uselist=False)
+    crop_process = db.relationship('ProcessLevel', backref="process_level", uselist=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+
+    
+class CropCategories(db.Model):
+    __tablename__ = "cropcategories"
+    crop_category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
+    crop_variety = db.Column(db.String(70), nullable=False)
+    crop_code = db.Column(db.String(70), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+
+class ProcessLevel(db.Model):
+    __tablename__ = "process_level"
+    process_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
+    process_state = db.Column(db.String(30), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))

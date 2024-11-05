@@ -16,6 +16,6 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
-@admin_bp.route('/login', methods=['POST'])
+@admin_bp.route('/addcrop', methods=['POST'])
 def login():
     pass
