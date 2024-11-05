@@ -112,3 +112,18 @@ class ProcessLevel(db.Model):
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
     process_state = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+    
+class Countries(db.Model):
+    __tablename__ = "countries"
+    country_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    country_name = db.Column(db.String(100), nullable=False)
+    country_code = db.Column(db.String(5), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+    
+class Regions(db.Model):
+    __tablename__ = "regions"
+    region_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    country_id = db.Column(db.Integer, db.ForeignKey('countries.countries_id'))
+    country_name = db.Column(db.String(100), nullable=False)
+    country_code = db.Column(db.String(5), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
