@@ -22,13 +22,14 @@ def addcrop():
     try:
         #TODOGetting the user's id
         id = uuid.UUID(decode_id(get_jwt_identity()))
-        
+  
         #Retrieve authorization token
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
-        return user_data['company_role']
+        
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['com']:
+        
+        if user_query and user_data['company_role'] == "Z":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -45,9 +46,14 @@ def addcrop():
             db.session.add(new_crop)
             db.session.commit()
             
-            return ({
+            return jsonify({
                 "status": True,
                 "message": "New crop added"
+            })
+        else:
+            return jsonify({
+                "status": False,
+                "message" : "Unauthorized access"
             })
     except:
         db.session.rollback()
