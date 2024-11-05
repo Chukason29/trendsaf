@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify, abort, session, make_response, url_for, redirect
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops
+from ...models import Users, Profile, Tokens, Crops, Countries
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -20,9 +20,15 @@ admin_bp = Blueprint('admin', __name__)
 @jwt_required()
 def addcrop():
     try:
+        #TODOGetting the user's id
         id = uuid.UUID(decode_id(get_jwt_identity()))
+        
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        return user_data['company_role']
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query:
+        if user_query and user_data['com']:
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -50,7 +56,7 @@ def addcrop():
 
 @admin_bp.route('/addcountry', methods=['POST'])
 @jwt_required()
-def addcrop():
+def addcountry():
     try:
         id = uuid.UUID(decode_id(get_jwt_identity()))
         user_query = Users.query.filter_by(user_uuid = id).first()
@@ -61,19 +67,20 @@ def addcrop():
             if 'country_name' not in data or 'country_code' not in data:
                 abort(422)
             country_name = request.json.get('country_name')
-            is_crop_exists= Crops.query.filter_by(country_name = country_name).first()
-            if is_crop_exists :
+            country_code = request.json.get('country_code')
+            is_country_exists= Countries.query.filter_by(country_name = country_name).first()
+            if is_country_exists :
                 return jsonify({
                     "status": False,
-                    "message" : "Crop name already exists"
+                    "message" : "Country name already exists"
                 })
-            new_crop = Crops(country_name = country_name)
-            db.session.add(new_crop)
+            new_country = Countries(country_name = country_name, country_code = country_code)
+            db.session.add(new_country)
             db.session.commit()
             
             return ({
                 "status": True,
-                "message": "New crop added"
+                "message": "New country added"
             })
     except:
         db.session.rollback()
