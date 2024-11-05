@@ -17,5 +17,25 @@ import json
 admin_bp = Blueprint('admin', __name__)
 
 @admin_bp.route('/addcrop', methods=['POST'])
-def login():
-    pass
+def addcrop():
+    try:
+        #TODO get crop_name from request
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        if 'crop_name' not in data:
+            abort(422)
+        crop_name = request.json.get('crop_name')
+        is_crop_exists= Users.query.filter_by(crop_name = crop_name).first()
+        if is_crop_exists :
+            return jsonify({
+                "status": False,
+                "message" : "Crop name already exists"
+            })
+        new_crop = Users(crop_name = crop_name)
+        db.session.add(new_crop)
+        db.session.commit()  
+    except:
+        db.session.rollback()
+        raise
+    
