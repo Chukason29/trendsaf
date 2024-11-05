@@ -82,9 +82,13 @@ def create_app(config_class=Config):
     from .blueprints.signup.routes import signup_bp
     app.register_blueprint(signup_bp, url_prefix='/signup')
     
-    #registration, verification and confirmation blueprint
+    #admin blueprint
     from .blueprints.admin.routes import admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    
+    #General blueprint
+    from .blueprints.general_routes.routes import general_bp
+    app.register_blueprint(general_bp, url_prefix='/general_routes')
     
     # Register error handlers
     register_error_handlers(app)
