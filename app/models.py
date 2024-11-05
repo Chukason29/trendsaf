@@ -33,7 +33,7 @@ class Profile(db.Model):
     company_size = db.Column(db.String(100), nullable=True)
     start_year = db.Column(db.String(50), nullable=True)
     annual_revenue = db.Column(db.String(50), nullable=True)
-    company_role = db.Column(ARRAY(String))
+    company_role = db.Column(db.String(50), nullable=True)
     phone = db.Column(db.String(15), nullable=True)
     province = db.Column(db.String(50), nullable=True)
     country = db.Column(db.String(50), nullable=True)
