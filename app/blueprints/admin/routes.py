@@ -115,19 +115,18 @@ def addregion():
             country = request.get_json()
             if not is_json(country):
                 abort(415)
-            if 'country_name' not in country:
+            if 'region_name' not in country or 'country_name' not in country or 'country_id' not in country:
                 abort(422)
+            region_name = request.json.get('region_name')
             country_name = request.json.get('country_name')
-            return jsonify({
-                "country":country_name
-            })
-            new_country = Countries(country_name = country_name)
-            db.session.add(new_country)
+            country_id = request.json.get('country_id')
+            new_region = Regions(region_name = region_name, country_id = country_id)
+            db.session.add(new_region)
             db.session.commit()
             
             return jsonify({
                 "status": True,
-                "message": "New country added"
+                "message": "New region added"
             })
         else:
             abort(403)
