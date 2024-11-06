@@ -282,8 +282,7 @@ def password_reset(token):
 @jwt_required()
 def auth_access():
     try:
-        id = uuid.UUID(decode_id(get_jwt_identity()))
-        
+        id = uuid.UUID(decode_id(get_jwt_identity()))   
         return jsonify({
             "message": 'success'
         })

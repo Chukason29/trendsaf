@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -84,6 +84,44 @@ def addcountry():
                     "message" : "Country name already exists"
                 })
             new_country = Countries(country_name = country_name, country_code = country_code)
+            db.session.add(new_country)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New country added"
+            })
+        else:
+            abort(403)
+    except:
+        db.session.rollback()
+        raise
+    
+
+@admin_bp.route('/addregion', methods=['POST'])
+@jwt_required()
+def addregion():
+    try:
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        if user_query and user_data['company_role'] == "Z":
+            data = request.get_json()
+            
+            country = request.get_json()
+            if not is_json(country):
+                abort(415)
+            if 'country_name' not in country:
+                abort(422)
+            country_name = request.json.get('country_name')
+            return jsonify({
+                "country":country_name
+            })
+            new_country = Countries(country_name = country_name)
             db.session.add(new_country)
             db.session.commit()
             
