@@ -136,7 +136,7 @@ def addregion():
 
 @admin_bp.route('/crops/catecories', methods=['POST'])
 @jwt_required()
-def addregion():
+def addcropcategories():
     try:
         id = uuid.UUID(decode_id(get_jwt_identity()))
         #Retrieve authorization token
