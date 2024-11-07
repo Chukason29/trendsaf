@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -163,6 +163,43 @@ def addcropcategories():
             return jsonify({
                 "status": True,
                 "message": "New Crop Category added"
+            })
+        else:
+            abort(403)
+    except:
+        db.session.rollback()
+        raise
+    
+    
+@admin_bp.route('/crops/process_state', methods=['POST'])
+@jwt_required()
+def process_state():
+    try:
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        if user_query and user_data['user_role'] == "Z":
+            data = request.get_json()
+            
+            crop = request.get_json()
+            if not is_json(crop):
+                abort(415)
+            if 'crop_id' not in crop or 'crop_category_id' not in crop or 'process_state' not in crop:
+                abort(422)
+            process_state = request.json.get('process_state')
+            crop_category_id = request.json.get('crop_category_id')
+            crop_id = request.json.get('crop_id')
+            new_process_state = ProcessLevel(crop_id = crop_id, crop_category_id = crop_category_id, process_state = process_state)
+            db.session.add(new_process_state)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New Process Level added"
             })
         else:
             abort(403)
