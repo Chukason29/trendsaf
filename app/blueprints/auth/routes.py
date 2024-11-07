@@ -339,7 +339,8 @@ def confirmation():
                 annual_revenue=annual_revenue,
                 company_role=company_role,
                 phone=phone,
-                province=province
+                province=province,
+                country=country
         )
 
         db.session.commit()
@@ -367,7 +368,8 @@ def confirmation():
                     "annual_revenue":annual_revenue,
                     "company_role":company_role,
                     "phone":phone,
-                    "province":province  
+                    "province":province,
+                    "country":country
                 }
             )
         )
