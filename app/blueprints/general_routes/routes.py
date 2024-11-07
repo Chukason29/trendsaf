@@ -13,7 +13,7 @@ def get_crops():
     return jsonify(all_crops)
 
 @general_bp.route('/cropcategories', methods = ['POST', 'GET'])
-def get_crops():
+def get_cropcategories():
     crop = request.get_json()
     #TODO check is certain params are missing
     if "crop_id" not in crop:
