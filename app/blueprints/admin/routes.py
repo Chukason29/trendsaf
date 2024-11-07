@@ -156,7 +156,7 @@ def addcropcategories():
             crop_code = request.json.get('crop_code')
             crop_variety = request.json.get('crop_variety')
             crop_id = request.json.get('crop_id')
-            new_crop_category = CropCategories(crop_variety = crop_variety, crop_code = crop_code)
+            new_crop_category = CropCategories(crop_variety = crop_variety, crop_code = crop_code, crop_id = crop_id)
             db.session.add(new_crop_category)
             db.session.commit()
             
