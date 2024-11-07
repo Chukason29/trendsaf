@@ -1,6 +1,6 @@
 from . import db
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import ARRAY
+#dfrom sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 import pendulum
 
@@ -30,10 +30,10 @@ class Profile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id')) 
     company_name = db.Column(db.String(100), nullable=True)
     company_type = db.Column(db.String(50), nullable=True)
-    company_size = db.Column(db.String(100), nullable=True)
+    company_size = db.Column(db.String(5), nullable=True)
     start_year = db.Column(db.String(50), nullable=True)
-    annual_revenue = db.Column(db.String(50), nullable=True)
-    company_role = db.Column(db.String(50), nullable=True)
+    annual_revenue = db.Column(db.String(5), nullable=True)
+    company_role = db.Column(db.String(5), nullable=True)
     phone = db.Column(db.String(15), nullable=True)
     province = db.Column(db.String(50), nullable=True)
     country = db.Column(db.String(50), nullable=True)
@@ -110,6 +110,7 @@ class ProcessLevel(db.Model):
     __tablename__ = "process_level"
     process_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
+    crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
     process_state = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
