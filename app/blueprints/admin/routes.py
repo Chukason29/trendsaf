@@ -16,7 +16,7 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
-@admin_bp.route('/crops/add', methods=['POST'])
+@admin_bp.route('/crops', methods=['POST'])
 @jwt_required()
 def addcrop():
     try:
@@ -60,7 +60,7 @@ def addcrop():
         raise
     
 
-@admin_bp.route('/countries/add', methods=['POST'])
+@admin_bp.route('/countries', methods=['POST'])
 @jwt_required()
 def addcountry():
     try:
@@ -98,7 +98,7 @@ def addcountry():
         raise
     
 
-@admin_bp.route('/regions/add', methods=['POST'])
+@admin_bp.route('countries/regions/', methods=['POST'])
 @jwt_required()
 def addregion():
     try:
