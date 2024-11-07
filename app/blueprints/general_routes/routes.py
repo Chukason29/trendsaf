@@ -22,7 +22,7 @@ def get_cropcategories():
     cropCategories = CropCategories.query.filter_by(crop_id=crop_id).all()
     all_crops = [
         {
-            "id": cropCategory.crop_categories_id, 
+            "id": cropCategory.crop_category_id, 
             "variety": cropCategory.crop_variety, 
             "code":cropCategory.crop_code
         } for cropCategory in cropCategories]
