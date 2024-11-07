@@ -134,7 +134,7 @@ def addregion():
         db.session.rollback()
         raise
 
-@admin_bp.route('/crops/catecories', methods=['POST'])
+@admin_bp.route('/crops/categories', methods=['POST'])
 @jwt_required()
 def addcropcategories():
     try:
