@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -16,7 +16,7 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
-@admin_bp.route('/addcrop', methods=['POST'])
+@admin_bp.route('/crops/add', methods=['POST'])
 @jwt_required()
 def addcrop():
     try:
@@ -60,7 +60,7 @@ def addcrop():
         raise
     
 
-@admin_bp.route('/addcountry', methods=['POST'])
+@admin_bp.route('/countries/add', methods=['POST'])
 @jwt_required()
 def addcountry():
     try:
@@ -98,7 +98,7 @@ def addcountry():
         raise
     
 
-@admin_bp.route('/addregion', methods=['POST'])
+@admin_bp.route('/regions/add', methods=['POST'])
 @jwt_required()
 def addregion():
     try:
@@ -127,6 +127,42 @@ def addregion():
             return jsonify({
                 "status": True,
                 "message": "New region added"
+            })
+        else:
+            abort(403)
+    except:
+        db.session.rollback()
+        raise
+
+@admin_bp.route('/cropcatecories/add', methods=['POST'])
+@jwt_required()
+def addregion():
+    try:
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        if user_query and user_data['user_role'] == "Z":
+            data = request.get_json()
+            
+            country = request.get_json()
+            if not is_json(country):
+                abort(415)
+            if 'region_name' not in country or 'crop_variety' not in country or 'crop_code' not in country:
+                abort(422)
+            crop_code = request.json.get('crop_code')
+            crop_variety = request.json.get('crop_variety')
+            crop_id = request.json.get('crop_id')
+            new_crop_category = CropCategories(crop_variety = crop_variety, crop_code = crop_code)
+            db.session.add(new_crop_category)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New Crop Category added"
             })
         else:
             abort(403)
