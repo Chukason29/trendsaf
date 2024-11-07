@@ -69,7 +69,7 @@ def addcountry():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "Z":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -109,7 +109,7 @@ def addregion():
         
         
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "Z":
             data = request.get_json()
             
             country = request.get_json()
