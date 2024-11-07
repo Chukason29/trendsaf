@@ -151,7 +151,7 @@ def addcropcategories():
             country = request.get_json()
             if not is_json(country):
                 abort(415)
-            if 'region_name' not in country or 'crop_variety' not in country or 'crop_code' not in country:
+            if 'crop_id' not in country or 'crop_variety' not in country or 'crop_code' not in country:
                 abort(422)
             crop_code = request.json.get('crop_code')
             crop_variety = request.json.get('crop_variety')
