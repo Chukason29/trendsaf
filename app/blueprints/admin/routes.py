@@ -16,7 +16,7 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
-@admin_bp.route('/crops', methods=['POST'])
+@admin_bp.route('/crops',  methods=['POST'])
 @jwt_required()
 def addcrop():
     try:
