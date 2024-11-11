@@ -181,42 +181,6 @@ def addregion():
         db.session.rollback()
         raise
 
-@admin_bp.route('/crops/categories', methods=['POST'])
-@jwt_required()
-def addcropcategories():
-    try:
-        id = uuid.UUID(decode_id(get_jwt_identity()))
-        #Retrieve authorization token
-        auth_token = request.headers.get("Authorization").split(" ")[1]
-        user_data = decode_token(auth_token, allow_expired=False)
-        
-        
-        user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['user_role'] == "Z":
-            data = request.get_json()
-            
-            country = request.get_json()
-            if not is_json(country):
-                abort(415)
-            if 'crop_id' not in country or 'crop_variety' not in country or 'crop_code' not in country:
-                abort(422)
-            crop_code = request.json.get('crop_code')
-            crop_variety = request.json.get('crop_variety')
-            crop_id = request.json.get('crop_id')
-            new_crop_category = CropCategories(crop_variety = crop_variety, crop_code = crop_code, crop_id = crop_id)
-            db.session.add(new_crop_category)
-            db.session.commit()
-            
-            return jsonify({
-                "status": True,
-                "message": "New Crop Category added"
-            })
-        else:
-            abort(403)
-    except:
-        db.session.rollback()
-        raise
-    
     
 @admin_bp.route('/crops/process_state', methods=['POST'])
 @jwt_required()
