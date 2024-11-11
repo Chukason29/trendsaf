@@ -89,21 +89,26 @@ class Tokens(db.Model):
     token = db.Column(db.String(1000), nullable=False)
     is_token_used = db.Column(db.Boolean, default=False)
 
-class Crops(db.Model):
-    __tablename__ = "crops"
-    crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_name = db.Column(db.String(50), nullable=False)
-    crop_cat = db.relationship('CropCategories', backref="cropcategories", uselist=False)
-    crop_process = db.relationship('ProcessLevel', backref="process_level", uselist=False)
-    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
-
-    
 class CropCategories(db.Model):
     __tablename__ = "cropcategories"
     crop_category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_category_name = db.Column(db.String(30), nullable=False)
+    crop = db.relationship('crop', backref="crop", uselist=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+
+class Crops(db.Model):
+    __tablename__ = "crops"
+    crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
+    crop_name = db.Column(db.String(50), nullable=False)
+    crop_variety = db.relationship('cropvariety', backref="variety", uselist=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+
+class CropVariety(db.Model):
+    __tablename__ = "cropvariety"
+    crop_variety_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
-    crop_variety = db.Column(db.String(70), nullable=False)
-    crop_code = db.Column(db.String(70), nullable=False)
+    crop_variety_name = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class ProcessLevel(db.Model):

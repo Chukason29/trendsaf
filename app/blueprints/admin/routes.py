@@ -16,6 +16,53 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
+
+
+@admin_bp.route('/cropcategories',  methods=['POST'])
+@jwt_required()
+def cropcategories():
+    try:
+        #TODOGetting the user's id
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+  
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        
+        if user_query and user_data['user_role'] == "Z":
+            data = request.get_json()
+            if not is_json(data):
+                abort(415)
+            if 'crop_category_name' not in data:
+                abort(422)
+            crop_category_name = request.json.get('crop_category_name')
+            is_crop_category_exists= Crops.query.filter_by(crop_category_name = crop_category_name).first()
+            if is_crop_category_exists :
+                return jsonify({
+                    "status": False,
+                    "message" : "Crop category name already exists"
+                })
+            new_crop_category = CropCategories(crop_category_name = crop_category_name)
+            db.session.add(new_crop_category)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New crop category added"
+            })
+        else:
+            return jsonify({
+                "status": False,
+                "message" : "Unauthorized access"
+            })
+    except:
+        db.session.rollback()
+        raise
+
+
+
 @admin_bp.route('/crops',  methods=['POST'])
 @jwt_required()
 def addcrop():
