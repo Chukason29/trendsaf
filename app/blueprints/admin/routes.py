@@ -38,7 +38,7 @@ def cropcategories():
             if 'crop_category_name' not in data:
                 abort(422)
             crop_category_name = request.json.get('crop_category_name')
-            is_crop_category_exists= Crops.query.filter_by(crop_category_name = crop_category_name).first()
+            is_crop_category_exists= CropCategories.query.filter_by(crop_category_name = crop_category_name).first()
             if is_crop_category_exists :
                 return jsonify({
                     "status": False,
