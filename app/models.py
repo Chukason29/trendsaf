@@ -93,7 +93,7 @@ class CropCategories(db.Model):
     __tablename__ = "cropcategories"
     crop_category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_category_name = db.Column(db.String(30), nullable=False)
-    crop = db.relationship('crop', backref="crop", uselist=False)
+    crop = db.relationship('crops', backref="crops", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class Crops(db.Model):
@@ -101,7 +101,7 @@ class Crops(db.Model):
     crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
     crop_name = db.Column(db.String(50), nullable=False)
-    crop_variety = db.relationship('cropvariety', backref="variety", uselist=False)
+    crop_variety = db.relationship('cropvariety', backref="cropvariety", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class CropVariety(db.Model):
