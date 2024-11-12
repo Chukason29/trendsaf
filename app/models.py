@@ -93,7 +93,7 @@ class CropCategories(db.Model):
     __tablename__ = "cropcategories"
     crop_category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_category_name = db.Column(db.String(30), nullable=False)
-    crop = db.relationship('crops', backref="crops", uselist=False)
+    crop = db.relationship('Crops', backref="crops", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class Crops(db.Model):
@@ -101,7 +101,7 @@ class Crops(db.Model):
     crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
     crop_name = db.Column(db.String(50), nullable=False)
-    crop_variety = db.relationship('cropvariety', backref="cropvariety", uselist=False)
+    crop_variety = db.relationship('CropVariety', backref="cropvariety", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class CropVariety(db.Model):
@@ -109,7 +109,7 @@ class CropVariety(db.Model):
     crop_variety_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
     crop_variety_name = db.Column(db.String(30), nullable=False)
-    crop_variety = db.relationship('process_level', backref="process_level", uselist=False)
+    crop_variety = db.relationship('ProcessLevel', backref="process_level", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class ProcessLevel(db.Model):
