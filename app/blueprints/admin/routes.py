@@ -80,16 +80,17 @@ def addcrop():
             data = request.get_json()
             if not is_json(data):
                 abort(415)
-            if 'crop_name' not in data:
+            if 'crop_name' not in data or 'crop_category_id' not in data:
                 abort(422)
             crop_name = request.json.get('crop_name')
+            crop_category_id = request.json.get('crop_category_id')
             is_crop_exists= Crops.query.filter_by(crop_name = crop_name).first()
             if is_crop_exists :
                 return jsonify({
                     "status": False,
                     "message" : "Crop name already exists"
                 })
-            new_crop = Crops(crop_name = crop_name)
+            new_crop = Crops(crop_name = crop_name, crop_category_id = crop_category_id)
             db.session.add(new_crop)
             db.session.commit()
             
