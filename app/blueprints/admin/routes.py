@@ -62,7 +62,6 @@ def cropcategories():
         raise
 
 
-
 @admin_bp.route('/crops',  methods=['POST'])
 @jwt_required()
 def addcrop():
@@ -238,18 +237,18 @@ def process_state():
         
         
         user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['user_role'] == "Z":
+        if user_query and user_data['company_role'] == "Z":
             data = request.get_json()
             
             crop = request.get_json()
             if not is_json(crop):
                 abort(415)
-            if 'crop_id' not in crop or 'crop_category_id' not in crop or 'process_state' not in crop:
+            if 'crop_id' not in crop or 'crop_variety_id' not in crop or 'process_state' not in crop:
                 abort(422)
             process_state = request.json.get('process_state')
-            crop_category_id = request.json.get('crop_category_id')
+            crop_variety_id = request.json.get('crop_variety_id')
             crop_id = request.json.get('crop_id')
-            new_process_state = ProcessLevel(crop_id = crop_id, crop_category_id = crop_category_id, process_state = process_state)
+            new_process_state = ProcessLevel(crop_id = crop_id, crop_variety_id = crop_variety_id, process_state = process_state)
             db.session.add(new_process_state)
             db.session.commit()
             
