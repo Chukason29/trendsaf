@@ -1,32 +1,48 @@
 from flask import Blueprint, request, jsonify, abort
 from sqlalchemy import Column, Integer, String, and_, desc, asc
-from ...models import Users, Crops, Countries, Regions, CropCategories
+from ...models import Users, Crops, Countries, Regions, CropCategories, CropVariety
 from ...config import Config
 import html
 import json
 
 general_bp = Blueprint('general_routes', __name__)
-@general_bp.route('/crops', methods = ['POST', 'GET'])
-def get_crops():
-    crops = Crops.query.order_by(asc(Crops.crop_name)).all()
-    all_crops = [{"id": crop.crop_id, "name": crop.crop_name} for crop in crops]
-    return jsonify(all_crops)
-
 @general_bp.route('/cropcategories', methods = ['POST', 'GET'])
 def get_cropcategories():
+    crop_categories = CropCategories.query.all()
+    all_crops = [{"id": crop_category.crop_category_id} for crop_category in crop_categories]
+    return jsonify(all_crops)
+
+@general_bp.route('/crops', methods = ['POST', 'GET'])
+def get_crops():
+    crop = request.get_json()
+    #TODO check is certain params are missing
+    if "crop_category_id" not in crop:
+        abort(422)
+    crop_category_id = crop['crop_category_id']
+    crops = Crops.query.filter_by(crop_category_id=crop_category_id).all()
+    all_crops = [
+        {
+            "id": crop.crop_id, 
+            "name":crop.crop_name
+        } for crop in crops]
+    return jsonify(all_crops)
+
+
+@general_bp.route('/crops/varieties', methods = ['POST', 'GET'])
+def get_varieties():
     crop = request.get_json()
     #TODO check is certain params are missing
     if "crop_id" not in crop:
         abort(422)
     crop_id = crop['crop_id']
-    cropCategories = CropCategories.query.filter_by(crop_id=crop_id).all()
+    crops = CropVariety.query.filter_by(crop_id=crop_id).all()
     all_crops = [
         {
-            "id": cropCategory.crop_category_id, 
-            "variety": cropCategory.crop_variety, 
-            "code":cropCategory.crop_code
-        } for cropCategory in cropCategories]
+            "id": crop.crop_variety_id, 
+            "name":crop.crop_variety_name
+        } for crop in crops]
     return jsonify(all_crops)
+
 
 @general_bp.route('/countries', methods = ['POST', 'GET'])
 def get_countries():
