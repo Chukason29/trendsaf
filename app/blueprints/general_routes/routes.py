@@ -9,7 +9,7 @@ general_bp = Blueprint('general_routes', __name__)
 @general_bp.route('/cropcategories', methods = ['POST', 'GET'])
 def get_cropcategories():
     crop_categories = CropCategories.query.all()
-    all_crops = [{"id": crop_category.crop_category_id} for crop_category in crop_categories]
+    all_crops = [{"id": crop_category.crop_category_id, "name" : crop_category.crop_category_name} for crop_category in crop_categories]
     return jsonify(all_crops)
 
 @general_bp.route('/crops', methods = ['POST', 'GET'])
