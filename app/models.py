@@ -109,13 +109,14 @@ class CropVariety(db.Model):
     crop_variety_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
     crop_variety_name = db.Column(db.String(30), nullable=False)
+    crop_variety = db.relationship('process_level', backref="process_level", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class ProcessLevel(db.Model):
     __tablename__ = "process_level"
     process_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
-    crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
+    crop_category_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
     process_state = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
