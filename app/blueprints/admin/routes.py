@@ -109,7 +109,7 @@ def addcrop():
 
 @admin_bp.route('/crops/variety',  methods=['POST'])
 @jwt_required()
-def addcrop():
+def addcrop_variety():
     try:
         #TODOGetting the user's id
         id = uuid.UUID(decode_id(get_jwt_identity()))
