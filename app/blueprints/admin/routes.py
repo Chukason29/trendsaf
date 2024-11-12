@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -97,6 +97,50 @@ def addcrop():
             return jsonify({
                 "status": True,
                 "message": "New crop added"
+            })
+        else:
+            return jsonify({
+                "status": False,
+                "message" : "Unauthorized access"
+            })
+    except:
+        db.session.rollback()
+        raise
+
+@admin_bp.route('/crops/variety',  methods=['POST'])
+@jwt_required()
+def addcrop():
+    try:
+        #TODOGetting the user's id
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+  
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        
+        if user_query and user_data['company_role'] == "Z":
+            data = request.get_json()
+            if not is_json(data):
+                abort(415)
+            if 'crop_variety_name' not in data or 'crop_id' not in data:
+                abort(422)
+            crop_variety_name = request.json.get('crop_variety_name')
+            crop_id = request.json.get('crop_id')
+            is_crop_exists= CropVariety.query.filter_by(crop_variety_name = crop_variety_name).first()
+            if is_crop_exists :
+                return jsonify({
+                    "status": False,
+                    "message" : "Crop variety already exists"
+                })
+            new_crop_variety = CropVariety(crop_variety_name = crop_variety_name, crop_id = crop_id)
+            db.session.add(new_crop_variety)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New crop variety added"
             })
         else:
             return jsonify({
