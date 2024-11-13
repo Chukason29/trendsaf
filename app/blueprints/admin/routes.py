@@ -31,7 +31,7 @@ def cropcategories():
         
         user_query = Users.query.filter_by(user_uuid = id).first()
         
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "Z":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
