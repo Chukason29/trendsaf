@@ -18,7 +18,7 @@ admin_bp = Blueprint('admin', __name__)
 
 
 
-@admin_bp.route('/cropcategories',  methods=['POST'])
+@admin_bp.route('/crops/categories',  methods=['POST'])
 @jwt_required()
 def cropcategories():
     try:
