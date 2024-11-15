@@ -12,7 +12,7 @@ def get_cropcategories():
     all_crops = [{"id": crop_category.crop_category_id, "name" : crop_category.crop_category_name} for crop_category in crop_categories]
     return jsonify(all_crops)
 
-@general_bp.route('/crops', methods = ['POST', 'GET'])
+@general_bp.route('/crops', methods = ['POST'])
 def get_crops():
     crop = request.get_json()
     #TODO check is certain params are missing
@@ -28,7 +28,7 @@ def get_crops():
     return jsonify(all_crops)
 
 
-@general_bp.route('/crops/varieties', methods = ['POST', 'GET'])
+@general_bp.route('/crops/varieties', methods = ['POST'])
 def get_varieties():
     crop = request.get_json()
     #TODO check is certain params are missing
@@ -51,13 +51,13 @@ def get_countries():
     return jsonify(all_countries)
 
 
-@general_bp.route('/regions', methods = ['POST', 'GET'])
+@general_bp.route('/regions', methods = ['POST'])
 def get_regions():
     #TODO get the country of the region needed
     country = request.get_json()
     
     #TODO check is certain params are missing
-    if 'country_name' not in country or "country_id" not in country:
+    if "country_id" not in country:
         abort(422)
     country_id = country['country_id']
     #TODO query the regions table based on the id sent
