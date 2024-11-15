@@ -261,8 +261,6 @@ paths:
               properties:
                 country_id:
                   type: integer
-                country_name:
-                  type: string
       responses:
         '200':
           description: Successfully retrieved regions
