@@ -14,8 +14,6 @@ def get_cropcategories():
 
 @general_bp.route('/crops', methods = ['GET'])
 def get_crops():
-    crop = request.get_json()
-    crop_category_id = crop['crop_category_id']
     crops = Crops.query.order_by(Crops.crop_category_id.asc()).all()
     all_crops = [
         {
