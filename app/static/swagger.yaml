@@ -278,7 +278,7 @@ paths:
             schema:
               type: object
               properties:
-                crop_categgory_id:
+                crop_category_id:
                   type: integer
       responses:
         '200':
