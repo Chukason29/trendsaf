@@ -1,5 +1,5 @@
 from .functions import is_valid_email, verify_code, verify_code_expiration
-from flask import Flask, jsonify, redirect, session, url_for
+from flask import Flask, jsonify, redirect, session, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy import Column, Integer, String, and_
@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from .config import Config #collecting the Config class from config.py to configure the app
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_swagger_ui import get_swaggerui_blueprint
 
 # Load environment variables from .env
 load_dotenv()
@@ -86,6 +87,22 @@ def create_app(config_class=Config):
                    })
 
 
+
+    @app.route('/static/<path:path>')
+    def send_static(path):
+        return send_from_directory('static', path)
+    
+    SWAGGER_URL = '/swagger'
+    API_URL = '/static/swagger.yaml'
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={
+            'TrendsAF' : "TrendsAF Endpoint for BaseFood"
+        }
+    )
+    
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     # Register blueprints
 
     #authentication/login blueprint
