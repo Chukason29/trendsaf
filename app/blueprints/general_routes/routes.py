@@ -12,19 +12,18 @@ def get_cropcategories():
     all_crops = [{"id": crop_category.crop_category_id, "name" : crop_category.crop_category_name} for crop_category in crop_categories]
     return jsonify(all_crops)
 
-@general_bp.route('/crops', methods = ['POST'])
+@general_bp.route('/crops', methods = ['GET'])
 def get_crops():
     crop = request.get_json()
-    #TODO check is certain params are missing
-    if "crop_category_id" not in crop:
-        abort(422)
     crop_category_id = crop['crop_category_id']
-    crops = Crops.query.filter_by(crop_category_id=crop_category_id).all()
+    crops = Crops.query.order_by(Crops.crop_category_id.asc()).all()
     all_crops = [
         {
             "id": crop.crop_id, 
-            "name":crop.crop_name
-        } for crop in crops]
+            "name":crop.crop_name,
+            "crop_category": crop.crop_category_id
+        } for crop in crops
+    ]
     return jsonify(all_crops)
 
 
