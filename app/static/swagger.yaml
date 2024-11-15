@@ -252,15 +252,6 @@ paths:
     get:
       summary: Get Regions
       description: Retrieves all regions for a specified country.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                country_id:
-                  type: integer
       responses:
         '200':
           description: Successfully retrieved regions
@@ -269,15 +260,6 @@ paths:
     get:
       summary: Get Crops
       description: Retrieves all crops in the system.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                crop_category_id:
-                  type: integer
       responses:
         '200':
           description: Successfully retrieved crops
