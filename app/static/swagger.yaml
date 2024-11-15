@@ -249,7 +249,7 @@ paths:
           description: Successfully retrieved countries
 
   /general_routes/regions:
-    get:
+    post:
       summary: Get Regions
       description: Retrieves all regions for a specified country.
       requestBody:
@@ -268,7 +268,7 @@ paths:
           description: Successfully retrieved regions
 
   /general_routes/crops:
-    get:
+    post:
       summary: Get Crops
       description: Retrieves all crops in the system.
       requestBody:
@@ -286,7 +286,7 @@ paths:
 
 
   /general_routes/crops/varieties:
-    get:
+    post:
       summary: Get Crop varieties
       description: Retrieves all varieties for a specified crop.
       requestBody:
