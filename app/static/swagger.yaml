@@ -271,6 +271,15 @@ paths:
     get:
       summary: Get Crops
       description: Retrieves all crops in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                crop_categgory_id:
+                  type: integer
       responses:
         '200':
           description: Successfully retrieved crops
