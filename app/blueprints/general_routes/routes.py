@@ -52,6 +52,6 @@ def get_countries():
 def get_regions():
 
     #TODO query the regions table based on the id sent
-    regions = Regions.query.order_by_by(Regions.country_id.asc()).all()
+    regions = Regions.query.order_by(Regions.country_id.asc()).all()
     allregions = [{"region_name" : region.region_name, "region_id" : region.region_id,"country_id" : region.country_id,} for region in regions]
     return jsonify(allregions)
