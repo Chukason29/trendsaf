@@ -25,20 +25,17 @@ def get_crops():
     return jsonify(all_crops)
 
 
-@general_bp.route('/crops/varieties', methods = ['POST'])
+@general_bp.route('/crops/varieties', methods = ['GET'])
 def get_varieties():
-    crop = request.get_json()
     #TODO check is certain params are missing
-    if "crop_id" not in crop:
-        abort(422)
-    crop_id = crop['crop_id']
-    crops = CropVariety.query.filter_by(crop_id=crop_id).all()
-    all_crops = [
-        {
+    crops = CropVariety.query.all()
+    all_varieties = [
+        {   
+            "crop_id" : crop.crop_id,
             "id": crop.crop_variety_id, 
             "name":crop.crop_variety_name
         } for crop in crops]
-    return jsonify(all_crops)
+    return jsonify(all_varieties)
 
 
 @general_bp.route('/countries', methods = ['POST', 'GET'])
