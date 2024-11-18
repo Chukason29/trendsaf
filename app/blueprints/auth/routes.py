@@ -70,7 +70,7 @@ def login():
                         "email" : result.Users.email,
                         "is_verified": result.Users.is_verified,
                         "is_confirmed": result.Users.is_confirmed,
-                        "user_role" : result.Profile.company_role,
+                        "company_role" : result.Profile.company_role,
                         "company_name": result.Profile.company_name,
                         "company_type" : result.Profile.company_type,
                         "company_size" : result.Profile.company_size,
