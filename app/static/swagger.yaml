@@ -266,18 +266,9 @@ paths:
 
 
   /general_routes/crops/varieties:
-    post:
+    get:
       summary: Get Crop varieties
       description: Retrieves all varieties for a specified crop.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                crop_id:
-                  type: integer
       responses:
         '200':
           description: Successfully retrieved varieties
