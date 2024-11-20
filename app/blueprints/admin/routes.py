@@ -189,7 +189,7 @@ def addcountry():
         raise
     
 
-@admin_bp.route('countries/regions/', methods=['POST'])
+@admin_bp.route('countries/regions', methods=['POST'])
 @jwt_required()
 def addregion():
     try:
