@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from sqlalchemy import Column, Integer, String, and_, desc, asc
-from ...models import Users, Crops, Countries, Regions, CropCategories, ProcessLevel
+from ...models import Users, Crops, Countries, Regions, CropCategories, CropVariety, ProcessLevel
 from ...config import Config
 import html
 import json

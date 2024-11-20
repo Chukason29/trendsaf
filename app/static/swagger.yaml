@@ -272,20 +272,14 @@ paths:
       responses:
         '200':
           description: Successfully retrieved varieties
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
 
- /general_routes/crops/process_state:
+  /general_routes/crops/process_state:
     get:
-      summary: Get Crop Process State
-      description: Retrieves all Process State of a variety for a specified crop.
+      summary: Get Crop process state
+      description: Retrieves all process state of a variety for a specified crop.
       responses:
         '200':
-          description: Successfully retrieved process states
+          description: Successfully retrieved process state
 components:
   securitySchemes:
     bearerAuth:
