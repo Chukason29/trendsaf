@@ -279,5 +279,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+ /general_routes/crops/process_state:
+    get:
+      summary: Get Crop Process State
+      description: Retrieves all Process State of a variety for a specified crop.
+      responses:
+        '200':
+          description: Successfully retrieved process states
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 security:
   - bearerAuth: []

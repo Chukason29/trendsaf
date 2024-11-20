@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from sqlalchemy import Column, Integer, String, and_, desc, asc
-from ...models import Users, Crops, Countries, Regions, CropCategories, CropVariety
+from ...models import Users, Crops, Countries, Regions, CropCategories, ProcessLevel
 from ...config import Config
 import html
 import json
@@ -34,6 +34,18 @@ def get_varieties():
             "crop_id" : crop.crop_id,
             "id": crop.crop_variety_id, 
             "name":crop.crop_variety_name
+        } for crop in crops]
+    return jsonify(all_varieties)
+
+@general_bp.route('/crops/process_state', methods = ['GET'])
+def get_process_state():
+    #TODO check is certain params are missing
+    crops = ProcessLevel.query.all()
+    all_varieties = [
+        {   
+            "crop_id" : crop.crop_id,
+            "crop_variety_id": crop.crop_variety_id, 
+            "process_state":crop.process_state
         } for crop in crops]
     return jsonify(all_varieties)
 
