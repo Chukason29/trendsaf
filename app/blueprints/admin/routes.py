@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -13,6 +13,9 @@ import html
 import secrets
 import datetime
 import json
+import csv
+import os
+import pandas as pd
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -257,6 +260,37 @@ def process_state():
             })
         else:
             abort(403)
+    except:
+        db.session.rollback()
+        raise
+    
+
+@admin_bp.route('/products/import', methods=['POST'])
+#@jwt_required()
+def import_data():
+    try:
+        CSV_FILE = "products.csv"
+        
+        # Get the directory of the current script
+        script_dir = os.path.dirname(__file__)
+        file_path = os.path.join(script_dir, "products.csv")
+        df = pd.read_csv(file_path)
+        # Ensure DataFrame columns match the table structure
+        df.columns = ["crop_variety_id", "country_id", "region_id", "price", "created_at"]
+        for index, row in df.iterrows():
+            product = Product(
+                crop_variety_id=row["crop_variety_id"],
+                country_id=row["country_id"],
+                region_id=row["region_id"],
+                price=row["price"],
+                created_at=row["created_at"]
+            )
+            db.session.add(product)
+                
+        db.session.commit()
+
+        return "Data imported successfully."
+
     except:
         db.session.rollback()
         raise

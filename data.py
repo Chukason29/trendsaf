@@ -7,12 +7,11 @@ import random
 file_name = "products.csv"
 
 # Define the headers for the CSV file
-headers = ["product_id", "crop_variety_id", "country_id", "price", "created_at", "region_id"]
+headers = ["crop_variety_id", "country_id", "region_id", "price", "created_at"]
 
 # Generate sample data
 sample_data = [
     {
-        "product_id": i + 1,  # Auto-incrementing ID
         "crop_variety_id": random.randint(1, 8),
         "country_id": random.randint(1, 4),
         "price": random.randint(50, 1000),
