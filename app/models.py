@@ -1,5 +1,5 @@
 from . import db
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Numeric
 #dfrom sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 import pendulum
@@ -110,6 +110,7 @@ class CropVariety(db.Model):
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
     crop_variety_name = db.Column(db.String(30), nullable=False)
     crop_variety = db.relationship('ProcessLevel', backref="process_level", uselist=False)
+    product = db.relationship('Product', backref="product", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class ProcessLevel(db.Model):
@@ -125,6 +126,7 @@ class Countries(db.Model):
     country_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     country_name = db.Column(db.String(100), nullable=False)
     country_code = db.Column(db.String(5), nullable=False)
+    products = db.relationship('Product', backref="products", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
 class Regions(db.Model):
@@ -132,4 +134,14 @@ class Regions(db.Model):
     region_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
     region_name = db.Column(db.String(100), nullable=False)
+    products = db.relationship('Product', backref="region_product", uselist=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+    
+class Product(db.Model):
+    __tablename__ = "product"
+    product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crop_variety_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
+    country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
+    region_id = db.Column(db.Integer, db.ForeignKey('regions.region_id'))
+    price = db.Column(db.Integer)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
