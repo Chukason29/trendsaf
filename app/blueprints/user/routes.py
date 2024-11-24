@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort, session, make_response, ur
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
+from sqlalchemy.orm import joinedload
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
 from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, CropVariety, Product
@@ -58,16 +59,23 @@ def crop_prices():
         
         #TODO query the database
         
-        results = (
+        '''results = (
             db.session.query(Product, CropVariety)
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
             .filter(Product.price > 500)  # Example filter
             .all()
+        )'''
+        results = (
+            db.session.query(Product)
+            .options(
+                joinedload(Product.crop_variety),
+                joinedload(Product.price)
+            )
+            .filter(Product.price > 500)
+            .all()
         )
-        for product, crop_variety in results:
-           pass
-        
-        results_final = [{"name": crop_variety.crop_variety_name, "price" : product.price} for product, crop_variety in results]
+                
+        results_final = [{"name": product.crop_variety.crop_variety_name, "price" : product.price} for product in results]
         
         return jsonify(results_final)
         #TODO get average price for the previous week or month
