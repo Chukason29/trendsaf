@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort, session, make_response, url_for, redirect
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
 from flask_mail import Mail, Message
-from sqlalchemy import Column, Integer, String, and_
+from sqlalchemy import Column, Integer, String, and_, func
 from sqlalchemy.orm import joinedload
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
@@ -46,20 +46,48 @@ def crop_prices():
         
         #TODO get today's date using python
         now = pendulum.now()
-        current_week_start = now.start_of("week").subtract(days=1)
-        previous_week_start = current_week_start.subtract(weeks=1)
+        
+        if duration == "week":   
+            current_duration = now.start_of("week").subtract(days=1)
+            previous_duration = current_duration.subtract(weeks=1)
+        elif duration == "month":   
+            current_duration = now.start_of("month")
+            previous_duration = current_duration.subtract(months=1)
                 
         
-        return jsonify({
-            "current_week" : current_week_start,
-            "previous_week": previous_week_start
-        })
-        #TODO get average price for the previous week or month
         
         #TODO get average price for the current week or month
+        current_week_data = (
+            session.query(
+                CropVariety.name.label("crop_variety_name"),
+                func.avg(Product.price).label("avg_price")
+            )
+            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
+            .filter(Product.created_at >= current_duration)
+            .group_by(CropVariety.name)
+            .all()
+        )
+        
+        #TODO get average price for the current week or month
+        previous_week_data = (
+        session.query(
+                CropVariety.name.label("crop_variety_name"),
+                func.avg(Product.price).label("avg_price")
+            )
+            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
+            .filter(
+                Product.created_at >= previous_duration,
+                Product.created_at < current_duration
+            )
+            .group_by(CropVariety.name)
+            .all()
+        )
         
         #TODO
-        
+        return jsonify({
+            "current_week" : current_duration,
+            "previous_week": previous_duration
+        })
         
     except:
         db.session.rollback()
