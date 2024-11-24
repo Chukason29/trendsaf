@@ -65,17 +65,19 @@ def crop_prices():
             .filter(Product.price > 500)  # Example filter
             .all()
         )'''
+        
+        #TODO use eager loading for large datasets
         results = (
-            db.session.query(Product)
+            db.session.query(CropVariety)
+            .join(Product, CropVariety.crop_variety_id == Product.crop_variety_id)
             .options(
-                joinedload(Product.crop_variety),
-                joinedload(Product.price)
+                joinedload(CropVariety.product)
             )
             .filter(Product.price > 500)
             .all()
         )
                 
-        results_final = [{"name": product.crop_variety.crop_variety_name, "price" : product.price} for product in results]
+        results_final = [{"name": product.crop_variety_name, "price" : product.product.price} for product in results]
         
         return jsonify(results_final)
         #TODO get average price for the previous week or month
