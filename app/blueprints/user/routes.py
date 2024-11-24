@@ -45,41 +45,15 @@ def crop_prices():
         duration = data['duration']
         
         #TODO get today's date using python
-        today_date = pendulum.now("UTC")
-        first_tier_date = ""
-        second_tier_date = ""
-        #TODO Check if the duration is a week or a month
-        if duration == "week":
-            first_tier_date = today_date.subtract(days=7)
-            second_tier_date = today_date.subtract(days=14)
-        elif duration == "month":
-            first_tier_date = today_date.subtract(days=30)
-            second_tier_date = today_date.subtract(days=60)
+        now = pendulum.now()
+        current_week_start = now.start_of("week")
+        previous_week_start = current_week_start.subtract(weeks=1)
                 
         
-        #TODO query the database
-        
-        '''results = (
-            db.session.query(Product, CropVariety)
-            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
-            .filter(Product.price > 500)  # Example filter
-            .all()
-        )'''
-        
-        #TODO use eager loading for large datasets
-        results = (
-            db.session.query(CropVariety)
-            .join(Product, CropVariety.crop_variety_id == Product.crop_variety_id)
-            .options(
-                joinedload(CropVariety.product)
-            )
-            .filter(Product.price > 500)
-            .all()
-        )
-                
-        results_final = [{"name": product.crop_variety_name, "price" : product.product.price} for product in results]
-        
-        return jsonify(results_final)
+        return jsonify({
+            "current_week" : current_week_start,
+            "previous_week": previous_week_start
+        })
         #TODO get average price for the previous week or month
         
         #TODO get average price for the current week or month
