@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety
+from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, CropVariety, Product
 from ...config import Config
 from ... import bcrypt, db, mail
 from datetime import date
@@ -47,22 +47,29 @@ def crop_prices():
         today_date = pendulum.now("UTC")
         first_tier_date = ""
         second_tier_date = ""
+        #TODO Check if the duration is a week or a month
         if duration == "week":
             first_tier_date = today_date.subtract(days=7)
             second_tier_date = today_date.subtract(days=14)
         elif duration == "month":
             first_tier_date = today_date.subtract(days=30)
             second_tier_date = today_date.subtract(days=60)
-        
-        return str(first_tier_date)
-        
-
-        
-        
-        #TODO Check if the duration is a week or a month
+                
         
         #TODO query the database
         
+        results = (
+            db.session.query(Product, CropVariety)
+            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
+            .filter(Product.price > 500)  # Example filter
+            .all()
+        )
+        for product, crop_variety in results:
+           pass
+        
+        results_final = [{"name": crop_variety.crop_variety_name, "price" : product.price} for product, crop_variety in results]
+        
+        return jsonify(results_final)
         #TODO get average price for the previous week or month
         
         #TODO get average price for the current week or month

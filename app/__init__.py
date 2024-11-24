@@ -83,6 +83,13 @@ def create_app(config_class=Config):
                           "allow_headers": ["Content-Type", "Authorization", "true", "X-CSRF-TOKEN"], 
                           "expose_headers": ["Authorization"],
                           "supports_credentials": True,
+                        },
+                        r"/user/*": {
+                          "origins": ["http://46.101.27.66:5001", "http://46.101.27.66:5080","http://localhost:5001","*"],
+                          "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
+                          "allow_headers": ["Content-Type", "Authorization", "true", "X-CSRF-TOKEN"], 
+                          "expose_headers": ["Authorization"],
+                          "supports_credentials": True,
                         }
                    })
 
