@@ -59,7 +59,7 @@ def crop_prices():
         #TODO get average price for the current week or month
         current_week_data = (
             db.session.query(
-                CropVariety.name.label("crop_variety_name"),
+                CropVariety.crop_variety_name.label("crop_variety_name"),
                 func.avg(Product.price).label("avg_price")
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
@@ -71,7 +71,7 @@ def crop_prices():
         #TODO get average price for the current week or month
         previous_week_data = (
         db.session.query(
-                CropVariety.name.label("crop_variety_name"),
+                CropVariety.crop_variety_name.label("crop_variety_name"),
                 func.avg(Product.price).label("avg_price")
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
