@@ -64,7 +64,7 @@ def crop_prices():
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
             .filter(Product.created_at >= current_duration)
-            .group_by(CropVariety.name)
+            .group_by(CropVariety.crop_variety_name)
             .all()
         )
         
@@ -79,7 +79,7 @@ def crop_prices():
                 Product.created_at >= previous_duration,
                 Product.created_at < current_duration
             )
-            .group_by(CropVariety.name)
+            .group_by(CropVariety.crop_variety_name)
             .all()
         )
         
