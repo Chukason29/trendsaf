@@ -46,7 +46,7 @@ def crop_prices():
         
         #TODO get today's date using python
         now = pendulum.now()
-        current_week_start = now.start_of("week")
+        current_week_start = now.start_of("week").subtract(days=1)
         previous_week_start = current_week_start.subtract(weeks=1)
                 
         
