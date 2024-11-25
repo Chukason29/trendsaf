@@ -17,7 +17,7 @@ sample_data = [
         "country_id": random.randint(1, 4),
         "region_id": random.randint(1, 4),
         "price": random.randint(50, 1000),
-        "created_at": pendulum.now("UTC").subtract(days=random.randint(0, 30)).to_iso8601_string()
+        "created_at":  pendulum.now("UTC").subtract(days=random.randint(0, 30)).to_datetime_string()
     }
     for i in range(100)  # Generate 20 rows of sample data
 ]
