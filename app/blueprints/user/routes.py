@@ -9,6 +9,7 @@ from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCat
 from ...config import Config
 from ... import bcrypt, db, mail
 from datetime import date
+import pandas as pd
 import uuid
 import jwt
 import html
@@ -63,7 +64,10 @@ def crop_prices():
                 func.avg(Product.price).label("avg_price")
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
-            .filter(Product.created_at >= current_duration)
+            .filter(Product.created_at >= current_duration, 
+                    Product.country_id == country_id, 
+                    Product.crop_variety_id == crop_variety_id
+            )
             .group_by(CropVariety.crop_variety_name)
             .all()
         )
@@ -77,17 +81,39 @@ def crop_prices():
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
             .filter(
                 Product.created_at >= previous_duration,
-                Product.created_at < current_duration
+                Product.created_at < current_duration,
+                Product.country_id == country_id, 
+                Product.crop_variety_id == crop_variety_id
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
         )
-        
+        # Step 3.4: Convert results to DataFrames for easy processing
+        current_df = pd.DataFrame(current_week_data, columns=["crop_variety_name", "avg_price"])
+        previous_df = pd.DataFrame(previous_week_data, columns=["crop_variety_name", "avg_price"])
+
+        # Merge dataframes to calculate week-on-week changes
+        merged_df = pd.merge(
+            current_df,
+            previous_df,
+            on="crop_variety_name",
+            how="outer",
+            suffixes=("_current", "_previous")
+        )
+
+        # Step 3.5: Calculate week-on-week percentage change
+        merged_df["week_on_week_change"] = (
+            (merged_df["avg_price_current"] - merged_df["avg_price_previous"])
+            / merged_df["avg_price_previous"]
+        ) * 100
+
+        # Replace NaN values for cleaner output
+        merged_df.fillna({"avg_price_current": 0, "avg_price_previous": 0, "week_on_week_change": 0}, inplace=True)
+
+        # Step 3.6: Convert results to JSON
+        result_json = merged_df.to_json(orient="records")
         #TODO
-        return jsonify({
-            "current_week" : current_duration,
-            "previous_week": previous_duration
-        })
+        return jsonify({result_json})
         
     except:
         db.session.rollback()
