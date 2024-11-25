@@ -113,7 +113,7 @@ def crop_prices():
         # Step 3.6: Convert results to JSON
         result_json = merged_df.to_json(orient="records")
         #TODO
-        return str(result_json)
+        return result_json
         
     except:
         db.session.rollback()
