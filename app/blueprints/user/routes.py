@@ -112,7 +112,7 @@ def crop_prices():
         merged_df.fillna({"avg_price_current": 0, "avg_price_previous": 0, "week_on_week_change": 0}, inplace=True)
 
         # Step 3.6: Convert results to JSON
-        result_json = json.loads(merged_df.to_json(orient="records"))
+        result_json = merged_df.to_json(orient="records")
         #TODO
         return result_json
         
