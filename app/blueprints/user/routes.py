@@ -65,9 +65,10 @@ def crop_prices():
                 func.avg(Product.price).label("avg_price")
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
-            .filter(Product.created_at >= current_duration, 
+            .filter(
+                    and_(Product.created_at >= current_duration, 
                     Product.country_id == country_id, 
-                    Product.crop_id == crop_id
+                    Product.crop_id == crop_id)
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
@@ -81,10 +82,10 @@ def crop_prices():
             )
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
             .filter(
-                Product.created_at >= previous_duration,
+                and_(Product.created_at >= previous_duration,
                 Product.created_at < current_duration,
                 Product.country_id == country_id, 
-                Product.crop_id == crop_id
+                Product.crop_id == crop_id)
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
