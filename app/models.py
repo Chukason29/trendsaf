@@ -140,7 +140,7 @@ class Regions(db.Model):
 class Product(db.Model):
     __tablename__ = "product"
     product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crops_id'))
+    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
     crop_variety_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
     country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
     region_id = db.Column(db.Integer, db.ForeignKey('regions.region_id'))
