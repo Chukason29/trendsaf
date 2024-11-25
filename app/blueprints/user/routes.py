@@ -37,7 +37,7 @@ def crop_prices():
         if not is_json(data):
             abort(415)
             
-        if 'crop_variety_id' not in data or 'country_id' not in data or 'duration' not in data:
+        if 'crop_id' not in data or 'country_id' not in data or 'duration' not in data:
             abort(422)
             
         #TODO get the values of crop_variety_id and country_id
