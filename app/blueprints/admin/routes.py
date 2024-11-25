@@ -276,9 +276,10 @@ def import_data():
         file_path = os.path.join(script_dir, "products.csv")
         df = pd.read_csv(file_path)
         # Ensure DataFrame columns match the table structure
-        df.columns = ["crop_variety_id", "country_id", "region_id", "price", "created_at"]
+        df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "created_at"]
         for index, row in df.iterrows():
             product = Product(
+                crop_id = row["crop_id"],
                 crop_variety_id=row["crop_variety_id"],
                 country_id=row["country_id"],
                 region_id=row["region_id"],
