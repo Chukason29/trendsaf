@@ -7,16 +7,17 @@ import random
 file_name = "products.csv"
 
 # Define the headers for the CSV file
-headers = ["crop_variety_id", "country_id", "region_id", "price", "created_at"]
+headers = ["crop_id", "crop_variety_id", "country_id", "region_id", "price", "created_at"]
 
 # Generate sample data
 sample_data = [
-    {
+    {   
+        "crop_id": random.randint(1, 6),
         "crop_variety_id": random.randint(1, 8),
         "country_id": random.randint(1, 4),
+        "region_id": random.randint(1, 4),
         "price": random.randint(50, 1000),
-        "created_at": pendulum.now("UTC").subtract(days=random.randint(0, 30)).to_iso8601_string(),
-        "region_id": random.randint(1, 4)
+        "created_at": pendulum.now("UTC").subtract(days=random.randint(0, 30)).to_iso8601_string()
     }
     for i in range(100)  # Generate 20 rows of sample data
 ]
