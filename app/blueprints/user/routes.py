@@ -42,7 +42,7 @@ def crop_prices():
             
         #TODO get the values of crop_variety_id and country_id
         crop_id = data['crop_id']
-        crop_variety_id = data['crop_variety_id']
+        #crop_variety_id = data['crop_variety_id']
         country_id = data['country_id']
         duration = data['duration']
         
