@@ -41,6 +41,7 @@ def crop_prices():
             abort(422)
             
         #TODO get the values of crop_variety_id and country_id
+        crop_id = data['crop_id']
         crop_variety_id = data['crop_variety_id']
         country_id = data['country_id']
         duration = data['duration']
@@ -66,7 +67,7 @@ def crop_prices():
             .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
             .filter(Product.created_at >= current_duration, 
                     Product.country_id == country_id, 
-                    Product.crop_variety_id == crop_variety_id
+                    Product.crop_id == crop_id
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
@@ -83,7 +84,7 @@ def crop_prices():
                 Product.created_at >= previous_duration,
                 Product.created_at < current_duration,
                 Product.country_id == country_id, 
-                Product.crop_variety_id == crop_variety_id
+                Product.crop_id == crop_id
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
