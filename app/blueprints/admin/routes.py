@@ -265,6 +265,45 @@ def process_state():
         raise
     
 
+@admin_bp.route('/products', methods=['POST'])
+@jwt_required()
+def addproduct():
+    try:
+        id = uuid.UUID(decode_id(get_jwt_identity()))
+        #Retrieve authorization token
+        auth_token = request.headers.get("Authorization").split(" ")[1]
+        user_data = decode_token(auth_token, allow_expired=False)
+        
+        
+        user_query = Users.query.filter_by(user_uuid = id).first()
+        if user_query and user_data['company_role'] == "Z":
+            data = request.get_json()
+            
+            country = request.get_json()
+            if not is_json(country):
+                abort(415)
+            if 'crop_id' not in country or 'crop_variety_id' not in country or 'region_id' not in country or 'country_id' not in country or 'price' not in country:
+                abort(422)
+            crop_id = request.json.get('crop_id')
+            crop_variety_id = request.json.get('crop_variety_id')
+            country_id = request.json.get('country_id')
+            region_id = request.json.get('region_id')
+            price = request.json.get('price')
+            new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id)
+            db.session.add(new_product)
+            db.session.commit()
+            
+            return jsonify({
+                "status": True,
+                "message": "New producttren added"
+            })
+        else:
+            abort(403)
+    except:
+        db.session.rollback()
+        raise
+
+
 @admin_bp.route('/products/import', methods=['POST'])
 #@jwt_required()
 def import_data():

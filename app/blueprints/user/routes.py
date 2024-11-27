@@ -68,7 +68,7 @@ def crop_prices():
             .filter(
                     and_(Product.created_at >= current_duration, 
                     Product.country_id == country_id, 
-                    Product.crop_id == crop_id)
+                    CropVariety.crop_id == crop_id)
             )
             .group_by(CropVariety.crop_variety_name)
             .all()
