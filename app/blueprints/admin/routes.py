@@ -288,7 +288,7 @@ def addproduct():
             crop_variety_id = request.json.get('crop_variety_id')
             country_id = request.json.get('country_id')
             region_id = request.json.get('region_id')
-            price = request.json.get('price')
+            price = request.json.get('price') * 100
             new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id)
             db.session.add(new_product)
             db.session.commit()
