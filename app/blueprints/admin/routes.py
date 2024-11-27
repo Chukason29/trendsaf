@@ -289,13 +289,13 @@ def addproduct():
             country_id = request.json.get('country_id')
             region_id = request.json.get('region_id')
             price = request.json.get('price') * 100
-            new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id)
+            new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id, price = price)
             db.session.add(new_product)
             db.session.commit()
             
             return jsonify({
                 "status": True,
-                "message": "New producttren added"
+                "message": "New product added"
             })
         else:
             abort(403)
