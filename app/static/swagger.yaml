@@ -250,9 +250,9 @@ paths:
                 country_id:
                   type: integer
                 region_id:
-                  type: string
+                  type: integer
                 price:
-                  type: float
+                  type: number
       responses:
         '200':
           description: Region added successfully
