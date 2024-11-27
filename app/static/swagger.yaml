@@ -232,6 +232,31 @@ paths:
         '200':
           description: Crop variety added successfully
 
+  /admin/products:
+    post:
+      summary: Add Product
+      description: Adds a new product remeber
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                crop_variety_id:
+                  type: integer
+                country_id:
+                  type: integer
+                region_id:
+                  type: string
+                price:
+                  type: float
+      responses:
+        '200':
+          description: Region added successfully
+
   /general_routes/cropcategories:
     get:
       summary: Get Crop Categories
@@ -280,6 +305,8 @@ paths:
       responses:
         '200':
           description: Successfully retrieved process state
+
+
 components:
   securitySchemes:
     bearerAuth:
