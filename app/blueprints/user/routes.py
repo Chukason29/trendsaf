@@ -66,7 +66,7 @@ def crop_prices():
         ).join(Product, CropVariety.crop_variety_id == Product.crop_variety_id) \
         .filter(Product.crop_id == crop_id) \
         .filter(Product.country_id == country_id) \
-        .group_by(CropVariety.crop_variety_id, CropVariety.crop_variety_name) \
+        .group_by(CropVariety.crop_variety_id) \
         .all()
 
         result_json = [
