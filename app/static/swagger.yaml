@@ -306,7 +306,7 @@ paths:
         '200':
           description: Successfully retrieved process state
 
-/user/crops/prices:
+  /user/crops/prices:
     post:
       summary: Get Price information
       description: Gets price info for selected preferences
