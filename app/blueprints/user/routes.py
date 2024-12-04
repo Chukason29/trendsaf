@@ -52,70 +52,38 @@ def crop_prices():
         if duration == "week":   
             current_duration = now.start_of("week").subtract(days=1)
             previous_duration = current_duration.subtract(weeks=1)
+            
         elif duration == "month":   
             current_duration = now.start_of("month")
             previous_duration = current_duration.subtract(months=1)
                 
+        result = db.session.query(
+        CropVariety.crop_variety_id.label('variety_id'),
+            CropVariety.crop_variety_name.label('variety_name'),
+            func.avg(Product.price).label('average_price'),
+            func.max(Product.price).label('max_price'),
+            func.min(Product.price).label('min_price')
+        ).join(Product, CropVariety.crop_variety_id == Product.crop_variety_id) \
+        .filter(CropVariety.crop_id == crop_id) \
+        .filter(Product.country_id == country_id) \
+        .filter(Product.created_at.between(current_duration, now)) \
+        .group_by(CropVariety.crop_variety_id, CropVariety.crop_variety_name) \
+        .all()
+
+        result_json = [
+        {
+            "variety_id": row.variety_id,
+            "variety_name": row.variety_name,
+            "max_price" : row.max_price,
+            "min_price" : row.min_price,
+            "average_price": float(row.average_price) if row.average_price is not None else None
+        }
+        for row in result
+        ]
+    
+        return jsonify(result_json)
         
         
-        #TODO get average price for the current week or month
-        current_week_data = (
-            db.session.query(
-                CropVariety.crop_variety_name.label("crop_variety_name"),
-                func.avg(Product.price).label("avg_price")
-            )
-            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
-            .filter(
-                    and_(Product.created_at >= current_duration, 
-                    Product.country_id == country_id, 
-                    CropVariety.crop_id == crop_id)
-            )
-            .group_by(CropVariety.crop_variety_name)
-            .all()
-        )
-        
-        #TODO get average price for the current week or month
-        previous_week_data = (
-        db.session.query(
-                CropVariety.crop_variety_name.label("crop_variety_name"),
-                func.avg(Product.price).label("avg_price")
-            )
-            .join(CropVariety, Product.crop_variety_id == CropVariety.crop_variety_id)
-            .filter(
-                and_(Product.created_at >= previous_duration,
-                Product.created_at < current_duration,
-                Product.country_id == country_id, 
-                Product.crop_id == crop_id)
-            )
-            .group_by(CropVariety.crop_variety_name)
-            .all()
-        )
-        # Step 3.4: Convert results to DataFrames for easy processing
-        current_df = pd.DataFrame(current_week_data, columns=["crop_variety_name", "avg_price"])
-        previous_df = pd.DataFrame(previous_week_data, columns=["crop_variety_name", "avg_price"])
-
-        # Merge dataframes to calculate week-on-week changes
-        merged_df = pd.merge(
-            current_df,
-            previous_df,
-            on="crop_variety_name",
-            how="outer",
-            suffixes=("_current", "_previous")
-        )
-
-        # Step 3.5: Calculate week-on-week percentage change
-        merged_df["week_on_week_change"] = (
-            (merged_df["avg_price_current"] - merged_df["avg_price_previous"])
-            / merged_df["avg_price_previous"]
-        ) * 100
-
-        # Replace NaN values for cleaner output
-        merged_df.fillna({"avg_price_current": 0, "avg_price_previous": 0, "week_on_week_change": 0}, inplace=True)
-
-        # Step 3.6: Convert results to JSON
-        result_json = merged_df.to_json(orient="records")
-        #TODO
-        return result_json
         
     except:
         db.session.rollback()
