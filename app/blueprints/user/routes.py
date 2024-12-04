@@ -45,7 +45,7 @@ def crop_prices():
         #crop_variety_id = data['crop_variety_id']
         country_id = data['country_id']
         duration = data['duration']
-        
+        #.filter(Product.created_at.between(current_duration, now)) \
         #TODO get today's date using python
         now = pendulum.now()
         
@@ -66,7 +66,6 @@ def crop_prices():
         ).join(Product, CropVariety.crop_variety_id == Product.crop_variety_id) \
         .filter(CropVariety.crop_id == crop_id) \
         .filter(Product.country_id == country_id) \
-        .filter(Product.created_at.between(current_duration, now)) \
         .group_by(CropVariety.crop_variety_id, CropVariety.crop_variety_name) \
         .all()
 
