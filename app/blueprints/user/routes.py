@@ -64,7 +64,7 @@ def crop_prices():
             func.max(Product.price).label('max_price'),
             func.min(Product.price).label('min_price')
         ).join(Product, CropVariety.crop_variety_id == Product.crop_variety_id) \
-        .filter(CropVariety.crop_id == crop_id) \
+        .filter(Product.crop_id == crop_id) \
         .filter(Product.country_id == country_id) \
         .group_by(CropVariety.crop_variety_id, CropVariety.crop_variety_name) \
         .all()
