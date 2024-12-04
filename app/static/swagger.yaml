@@ -306,7 +306,26 @@ paths:
         '200':
           description: Successfully retrieved process state
 
-
+/user/crops/prices:
+    post:
+      summary: Get Price information
+      description: Gets price info for selected preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                country_id:
+                  type: integer
+                duration:
+                  type: string
+      responses:
+        '200':
+          description: Get all products for specified crops in a country
 components:
   securitySchemes:
     bearerAuth:
