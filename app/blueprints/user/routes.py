@@ -75,6 +75,7 @@ def crop_prices():
             "variety_name": row.variety_name,
             "max_price" : row.max_price/100,
             "min_price" : row.min_price/100,
+            "price_change" : row.max_price/row.min_price,
             "average_price": float(row.average_price)/100 if row.average_price is not None else None
         }
         for row in result
