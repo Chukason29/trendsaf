@@ -19,7 +19,7 @@ import json
 import pendulum
 
 user_bp = Blueprint('user', __name__)
-@user_bp.route('/crops/prices',  methods=['POST'])
+@user_bp.route('/crops/prices',  methods=['POST', 'GET'])
 @jwt_required()
 def crop_prices():
     try:
