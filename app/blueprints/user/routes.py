@@ -130,8 +130,6 @@ def crop_chart():
             previous_duration = current_duration.subtract(months=1)
                 
         result = db.session.query(
-        CropVariety.crop_variety_id.label('variety_id'),
-            CropVariety.crop_variety_name.label('variety_name'),
             Product.price.label('price'),
             Product.created_at.label('date'),
 
@@ -140,7 +138,6 @@ def crop_chart():
         .filter(Product.country_id == country_id) \
         .filter(Product.crop_variety_id == crop_variety_id) \
         .filter(Product.created_at >= current_duration) \
-        .group_by(CropVariety.crop_variety_id) \
         .all()
 
         result_json = [
