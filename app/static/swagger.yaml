@@ -66,6 +66,39 @@ paths:
       responses:
         '200':
           description: Successfully logged in
+  
+  /auth/confirmation:
+    post:
+      summary: Confirmation
+      description: Confirms a user for profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_name:
+                  type: string
+                country:
+                  type: string
+                company_type:
+                  type: string
+                company_size:
+                  type: string
+                start_year:
+                  type: string
+                annual_revenue:
+                  type: string
+                company_role:
+                  type: string
+                province:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Successfully logged in
 
   /auth/password_reset_request:
     post:

@@ -353,7 +353,7 @@ def confirmation():
         mail.send(msg)
         access_token = create_access_token(
             identity=token_id,
-            expires_delta=timedelta(hours=2400),
+            expires_delta=timedelta(days=90),
             additional_claims=(
                 {
                     "is_confirmed": True,
