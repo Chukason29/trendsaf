@@ -149,9 +149,6 @@ def crop_chart():
         ]
     
         return jsonify(result_json)
-        
-        
-        
     except:
         db.session.rollback()
         raise

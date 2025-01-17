@@ -41,15 +41,13 @@ def login():
         if not user:
             return jsonify({
                 "status" : False,
-                "message" : "wrong email or passwordcd",
-                "base_url" : Config.BASE_URL
+                "message" : "wrong email or passwordddddd",
             })
             #checked if there is a password match
         if not (password and bcrypt.check_password_hash(user.password, password)):
             return jsonify({
                 "status" : False,
-                "message" : "wrong email or password",
-                "base_url" : Config.BASE_URL
+                "message" : "wrong email or passwordddddd"
             })
         #TODO collected the uuid of the user encode it and use as the identity of the user in the JWT
         
