@@ -289,7 +289,8 @@ paths:
       responses:
         '200':
           description: Region added successfully
-    /admin/products/import:
+  
+  /admin/products/import:
     post:
       summary: Products Import
       description: Imports Product as a CSV file
