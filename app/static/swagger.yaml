@@ -289,6 +289,23 @@ paths:
       responses:
         '200':
           description: Region added successfully
+    /admin/products/import:
+    post:
+      summary: Products Import
+      description: Imports Product as a CSV file
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_link:
+                  type: string
+
+      responses:
+        '200':
+          description: Product imported successfully
 
   /general_routes/cropcategories:
     get:
