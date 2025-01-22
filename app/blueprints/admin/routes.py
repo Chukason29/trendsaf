@@ -308,11 +308,21 @@ def addproduct():
 #@jwt_required()
 def import_data():
     try:
-        CSV_FILE = "products.csv"
+        #get json data from api body
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        
+        #check if all required parameters are contained in the json body
+        if 'file_link' not in data:
+            abort(422)
+        file_link = data["file_link"]
+        CSV_FILE = file_link
+        
         
         # Get the directory of the current script
         script_dir = os.path.dirname(__file__)
-        file_path = os.path.join(script_dir, "products.csv")
+        file_path = os.path.join(script_dir, file_link)
         df = pd.read_csv(file_path)
         # Ensure DataFrame columns match the table structure
         df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "created_at"]
