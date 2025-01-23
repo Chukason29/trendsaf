@@ -301,7 +301,7 @@ paths:
             schema:
               type: object
               properties:
-                file_link:
+                file_data:
                   type: string
 
       responses:
