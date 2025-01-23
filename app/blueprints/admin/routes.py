@@ -316,13 +316,33 @@ def import_data():
         #check if all required parameters are contained in the json body
         if 'file_link' not in data:
             abort(422)
+        
         file_link = data["file_link"]
+        
+        # Validate the file link (basic check)
+        if not file_link.startswith(('https://')):
+            return jsonify({'error': 'Invalid file link'}), 400
+        
+        # Step 3: Fetch the file content from the link
+        response = request.get(file_link)
+        if response.status_code != 200:
+            return jsonify({'error': f'Failed to fetch file from {file_link}'}), 400
+    
+        # This will hold the file's binary content
+        file_content = response.content  
+        
+        # Process the file content (example: save to a local file)
+        file_name = "product.csv"
+        with open(file_name, 'wb') as f:
+            f.write(file_content)
+        
+        
         CSV_FILE = file_link
         
         
         # Get the directory of the current script
         script_dir = os.path.dirname(__file__)
-        file_path = os.path.join(script_dir, file_link)
+        file_path = os.path.join(script_dir, file_name)
         df = pd.read_csv(file_path)
         # Ensure DataFrame columns match the table structure
         df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "created_at"]
