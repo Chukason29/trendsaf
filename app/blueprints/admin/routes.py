@@ -319,6 +319,9 @@ def import_data():
             abort(422)
         
         file_data = data["file_data"]
+        return jsonify({
+            "file_content" : file_data
+        })
         file_name = "products.csv"
         # Decode Base64 data back to binary
         try:
@@ -326,9 +329,7 @@ def import_data():
         except Exception as e:
             return jsonify({'error': 'Invalid Base64 data'}), 400
         
-        return jsonify({
-            "file_content" : file_content
-        })
+        
         
         # Check if the file exists
         if os.path.exists(file_name):
