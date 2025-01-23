@@ -15,6 +15,7 @@ import datetime
 import json
 import csv
 import os
+import base64
 import pandas as pd
 
 admin_bp = Blueprint('admin', __name__)
@@ -305,7 +306,7 @@ def addproduct():
 
 
 @admin_bp.route('/products/import', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def import_data():
     try:
         #get json data from api body
@@ -314,30 +315,26 @@ def import_data():
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'file_link' not in data:
+        if 'file_data' not in data:
             abort(422)
         
-        file_link = data["file_link"]
+        file_data = data["file_data"]
+        file_name = "products.csv"
+        # Decode Base64 data back to binary
+        try:
+            file_content = base64.b64decode(file_data)
+        except Exception as e:
+            return jsonify({'error': 'Invalid Base64 data'}), 400
         
-        # Validate the file link (basic check)
-        if not file_link.startswith(('https://')):
-            return jsonify({'error': 'Invalid file link'}), 400
-        
-        # Step 3: Fetch the file content from the link
-        response = request.get(file_link)
-        if response.status_code != 200:
-            return jsonify({'error': f'Failed to fetch file from {file_link}'}), 400
-    
-        # This will hold the file's binary content
-        file_content = response.content  
-        
-        # Process the file content (example: save to a local file)
-        file_name = "product.csv"
-        with open(file_name, 'wb') as f:
-            f.write(file_content)
-        
-        
-        CSV_FILE = file_link
+        # Check if the file exists
+        if os.path.exists(file_name):
+            # If it exists, wipe the content by opening in write mode
+            with open(file_name, 'w') as file:
+                pass  # Wipe the content (empty file)
+        else:
+            # If it doesn't exist, create the file
+            with open(file_name, 'wb') as file:
+                file.write(file_content)
         
         
         # Get the directory of the current script
