@@ -326,6 +326,10 @@ def import_data():
         except Exception as e:
             return jsonify({'error': 'Invalid Base64 data'}), 400
         
+        return jsonify({
+            "file_content" : file_content
+        })
+        
         # Check if the file exists
         if os.path.exists(file_name):
             # If it exists, wipe the content by opening in write mode
