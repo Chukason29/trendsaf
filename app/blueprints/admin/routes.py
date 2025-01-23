@@ -319,10 +319,11 @@ def import_data():
             abort(422)
         
         file_data = data["file_data"]
-        return jsonify({
-            "file_content" : file_data
-        })
+        
         file_name = "products.csv"
+        return jsonify({
+            "file_content" : file_name
+        })
         # Decode Base64 data back to binary
         try:
             file_content = base64.b64decode(file_data)
