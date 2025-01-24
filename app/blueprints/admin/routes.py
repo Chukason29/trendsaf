@@ -1,10 +1,10 @@
-from flask import Blueprint, request, jsonify, abort, session, make_response, url_for, redirect
+from flask import Blueprint, request, jsonify, abort, session, make_response, url_for, redirect, render_template
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
-from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
-from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
+from ...functions import encode_id, decode_id, get_token_auth_header, generate_admin_link, is_valid_email, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
+from ...models import Users, Admins, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
 from ...config import Config
 from ... import bcrypt, db, mail
 import uuid
@@ -20,6 +20,90 @@ import pandas as pd
 
 admin_bp = Blueprint('admin', __name__)
 
+
+
+
+@admin_bp.route('/admin_reg', methods=['GET', 'POST'])
+def admin_reg(): # The hashed uuid value will be appended to the url link
+    try:
+        #get json data from api body
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        
+        #check if all required parameters are contained in the json body
+        if 'firstname' not in data or 'lastname' not in data or 'email' not in data or 'password' not in data:
+            abort(422)
+        
+        message = ""
+        email = html.escape(data['email'])
+        password = data["password"]
+        if not is_valid_email(data['email']): #checking if email is in correct format
+            return jsonify({"message": "invalid email"})
+        else:
+            #checking if email exists?
+            if request.method == "POST":
+                user_email = Admins.query.filter_by(email=email).first()
+                if user_email:
+                    return jsonify({"exists": True, "message": "Account with email already exists"}), 400
+            
+                firstname = html.escape(data['firstname'])
+                lastname = html.escape(data['lastname'])
+                #hash the password
+                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+                #creating a user uuid for identification
+                new_user_uuid = uuid.uuid4()
+
+                #convert the uuid to a string and encrypt
+                encrypted_id = encode_id(str(new_user_uuid))
+
+                #TODO Instantiating an object of users
+           
+                new_user = Admins(
+                            user_uuid = new_user_uuid, 
+                            firstname = firstname, 
+                            lastname = lastname, 
+                            email = email,
+                            password = hashed_password
+                        )
+                #message to send to the user
+            
+                
+                #creating a link to be sent to mail
+                link = generate_admin_link(email)
+                
+                #TODO Instantiating an object of tokens and store the link in the database
+                token = Tokens(token = link, is_token_used = False)
+                
+                #TODO persist info to the data
+                db.session.add(new_user)
+                db.session.add(token)
+                db.session.commit()
+                
+                
+                # Render HTML template
+                html_content = render_template("admin_mail.html", link=link, firstname=firstname)
+                #TODO send mail to user
+                #verify_mail_message = f""
+                msg = Message("Admin Password Reset",
+                    sender='victoralaegbu@gmail.com',
+                    recipients=[email])  # Change to recipient's email
+                msg.html = html_content  # Set HTML content for email
+                mail.send(msg)
+
+                #TODO return a json object
+                return jsonify({
+                        "status": 200, 
+                        "message": "Registration successful"
+                    }), 200
+            else:
+                abort(405)
+    except Exception as e:
+        db.session.rollback()
+        raise
+    finally:
+        db.session.close()
 
 
 @admin_bp.route('/crops/categories',  methods=['POST'])

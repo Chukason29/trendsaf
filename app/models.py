@@ -23,7 +23,15 @@ class Users(db.Model):
     # Relationship to user profile and OAuth accounts
     oauth_accounts = db.relationship('OAuthAccount', backref='oauth', lazy=True)
 
-
+class Admins(db.Model):
+    __tablename__ = "admins"
+    admin_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    admin_uuid = db.Column(UUID(as_uuid=True), unique=True)
+    firstname = db.Column(db.String(255), nullable=False)
+    lastname = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(70), nullable=False, unique=True)
+    password = db.Column(db.String(1000), nullable=True)
+    
 class Profile(db.Model):
     __tablename__ = "profile"
     profile_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

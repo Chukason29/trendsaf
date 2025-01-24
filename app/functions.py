@@ -42,6 +42,11 @@ def generate_verification_link(email):
     link = url_for('signup.confirm_email', token=token, _external=True)
     return link
 
+def generate_admin_link(email):
+    token = timed_serializer.dumps(email, salt=Config.SECRET_KEY)
+    link = url_for('admin.rest_password', token=token, _external=True)
+    return link
+
 def validate_verification_link(token):
     try:
         email = timed_serializer.loads(token, salt=Config.SECRET_KEY, max_age=3600)  # 1-hour expiration
