@@ -401,9 +401,9 @@ def import_data():
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'file_url' not in data:
+        if 'file_id' not in data:
             abort(422)
-        file_id = data["file_url"]
+        file_id = data["file_id"]
         
         file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
         
