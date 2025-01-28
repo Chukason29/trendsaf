@@ -25,9 +25,6 @@ def before_request():
 def login():
     try:
         #TODO get email and password from
-        return jsonify({
-            "data" : request.data
-        })
         data = request.get_json()
         if not is_json(data):
             abort(415)
