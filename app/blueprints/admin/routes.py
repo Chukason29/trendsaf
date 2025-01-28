@@ -396,19 +396,19 @@ def addproduct():
 def import_data():
     try:
         #get json data from api body
-        data = request.get_json()
-        if not is_json(data):
-            abort(415)
+        #data = request.get_json()
+        #if not is_json(data):
+        #    abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'file_id' not in data:
-            abort(404)
-        file_id = data["file_id"]
+        #if 'file_id' not in data:
+        #    abort(404)
+        #file_id = data["file_id"]
         return jsonify({
             "hmm" : "Hmmmm"
         })
         
-        file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
+        '''file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
         
         
         # Fetch the file content
@@ -437,7 +437,7 @@ def import_data():
                 
         db.session.commit()
 
-        return "Data imported successfully."
+        return "Data imported successfully." '''
 
     except:
         db.session.rollback()
