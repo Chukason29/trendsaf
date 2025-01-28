@@ -404,8 +404,9 @@ def import_data():
         if 'file_id' not in data:
             abort(404)
         file_id = data["file_id"]
+        api_key = Config.FILE_API_KEY
         return jsonify({
-            "data" : Config.FILE_API_KEY
+            "data" : api_key
         })
         
         '''file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
