@@ -307,6 +307,23 @@ paths:
       responses:
         '200':
           description: Product imported successfully
+  
+  /admin/import:
+    post:
+      summary: Import products Product
+      description: Imports a csv file for import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_id:
+                  type: string
+      responses:
+        '200':
+          description: New Product Price added successfully
 
   /general_routes/cropcategories:
     get:

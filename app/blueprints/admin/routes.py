@@ -444,3 +444,23 @@ def import_data():
         db.session.rollback()
         raise
     
+
+@admin_bp.route('/import', methods=['POST'])
+@jwt_required()
+def import_product():
+    try:
+        #get json data from api body
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        
+        #check if all required parameters are contained in the json body
+        if 'file_id' not in data:
+            abort(404)
+        file_id = data["file_id"]
+        api_key = Config.FILE_API_KEY
+        return jsonify({
+            "data" : api_key
+        })
+    except:
+        pass
