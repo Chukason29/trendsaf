@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://trendsaf.com.ng
+  - url: http://206.189.116.102:5080
 
 paths:
   /signup/registration:
