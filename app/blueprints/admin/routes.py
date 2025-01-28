@@ -7,6 +7,7 @@ from ...functions import encode_id, decode_id, get_token_auth_header, generate_a
 from ...models import Users, Admins, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
 from ...config import Config
 from ... import bcrypt, db, mail
+from io import StringIO
 import uuid
 import jwt
 import html
@@ -17,6 +18,7 @@ import csv
 import os
 import base64
 import pandas as pd
+import requests
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -399,38 +401,23 @@ def import_data():
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'file_data' not in data:
+        if 'file_url' not in data:
             abort(422)
+        file_id = data["file_url"]
         
-        file_data = data["file_data"]
+        file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
         
-        file_name = "products.csv"
-        # Decode Base64 data back to binary
-        try:
-            file_content = base64.b64decode(file_data)
-        except Exception as e:
-            return jsonify({'error': 'Invalid Base64 data'}), 400
+        # Fetch the file content
+        response = requests.get(file_url)
         
-        return jsonify({
-            "file_content" : file_content
-        })
-        
-        
-        # Check if the file exists
-        if os.path.exists(file_name):
-            # If it exists, wipe the content by opening in write mode
-            with open(file_name, 'w') as file:
-                pass  # Wipe the content (empty file)
-        else:
-            # If it doesn't exist, create the file
-            with open(file_name, 'wb') as file:
-                file.write(file_content)
-        
-        
-        # Get the directory of the current script
-        script_dir = os.path.dirname(__file__)
-        file_path = os.path.join(script_dir, file_name)
-        df = pd.read_csv(file_path)
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Convert the response content to a StringIO object
+            csv_data = StringIO(response.text)
+            
+            # Read the CSV data into a pandas DataFrame
+            df = pd.read_csv(csv_data)
+            
         # Ensure DataFrame columns match the table structure
         df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "created_at"]
         for index, row in df.iterrows():
