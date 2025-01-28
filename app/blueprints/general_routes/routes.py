@@ -19,7 +19,8 @@ def get_crops():
         {
             "id": crop.crop_id, 
             "name":crop.crop_name,
-            "crop_category": crop.crop_category_id
+            "crop_category": crop.crop_category_id,
+            "api_key" : Config.FILE_API_KEY
         } for crop in crops
     ]
     return jsonify(all_crops)
