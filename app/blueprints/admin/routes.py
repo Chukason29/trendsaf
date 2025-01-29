@@ -89,7 +89,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                 #TODO send mail to user
                 #verify_mail_message = f""
                 msg = Message("Admin Password Reset",
-                    sender='victoralaegbu@gmail.com',
+                    sender='support@trendsaf.co',
                     recipients=[email])  # Change to recipient's email
                 msg.html = html_content  # Set HTML content for email
                 mail.send(msg)

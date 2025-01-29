@@ -41,13 +41,13 @@ def login():
         if not user:
             return jsonify({
                 "status" : False,
-                "message" : "wrong email or passwordddddd",
+                "message" : "wrong email or password",
             })
             #checked if there is a password match
         if not (password and bcrypt.check_password_hash(user.password, password)):
             return jsonify({
                 "status" : False,
-                "message" : "wrong email or passwordddddd"
+                "message" : "wrong email or password"
             })
         #TODO collected the uuid of the user encode it and use as the identity of the user in the JWT
         
@@ -109,7 +109,7 @@ def login():
             #TODO send mail to user
             mail_message = "Click this link to verify your email address: " + link
             msg = Message("Confirm Registration",
-                sender='victoralaegbu@gmail.com',
+                sender='support@trendsaf.co',
                 recipients=[email])  # Change to recipient's email
             msg.body = mail_message
             mail.send(msg)
@@ -195,7 +195,7 @@ def password_reset_request():
             #TODO send mail to user
             mail_message = "Click this link to verify your email address: " + link['link']
             msg = Message("Confirm Registration",
-                sender='victoralaegbu@gmail.com',
+                sender='support@trendsaf.co',
                 recipients=[email])  # Change to recipient's email
             msg.body = mail_message
             mail.send(msg)
@@ -347,7 +347,7 @@ def confirmation():
         #TODO send confirmation email to the user
         message = "Congratulations your account has been confirmed"
         msg = Message("Registration onfirmation",
-        sender='victoralaegbu@gmail.com',
+        sender='support@trendsaf.co',
         recipients=[user_email])  # Change to recipient's email
         msg.body = message
         mail.send(msg)

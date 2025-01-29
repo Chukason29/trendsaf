@@ -89,7 +89,7 @@ def registration(): # The hashed uuid value will be appended to the url link
                 #TODO send mail to user
                 #verify_mail_message = f""
                 msg = Message("BaseFood Email verification",
-                    sender='victoralaegbu@gmail.com',
+                    sender='support@trendsaf.co',
                     recipients=[email])  # Change to recipient's email
                 msg.html = html_content  # Set HTML content for email
                 mail.send(msg)
@@ -165,7 +165,7 @@ def link_resend():
         #TODO send mail to user
         mail_message = "Click this link to verify your email address: " + link
         msg = Message("Confirm Registration",
-            sender='victoralaegbu@gmail.com',
+            sender='support@trendsaf.co',
             recipients=[email])  # Change to recipient's email
         msg.body = mail_message
         mail.send(msg)
