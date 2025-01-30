@@ -242,7 +242,7 @@ def pwd_link_verify(token):
 def password_reset(token):
     try:
         #TODO extract the user uuid from the token
-        id = validate_reset_token(token).get_json()
+        id = validate_password_link(token).get_json()
         user_id = uuid.UUID(id['id'])           
         
         return jsonify({
