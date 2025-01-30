@@ -243,7 +243,7 @@ def password_reset(token):
     try:
         #TODO extract the user uuid from the token
         id = validate_reset_token(token).get_json()
-        #user_id = uuid.UUID(id['id'])           
+        user_id = uuid.UUID(id['id'])           
         
         return jsonify({
             "me": id['message']
