@@ -187,13 +187,13 @@ def password_reset_request():
         user = Users.query.filter_by(email=email).first()
         if user:
             id = str(user.user_uuid)
-            link = generate_password_link(id)
+            pass_link = generate_password_link(id)
             
             #TODO Instantiating an object of tokens and store the link in th database
-            token = Tokens(token = link['link'], is_token_used = False)
+            token = Tokens(token = pass_link['link'], is_token_used = False)
             
             #TODO send mail to user
-            mail_message = "Click this link to verify your email address: " + link['link']
+            mail_message = "Click this link to verify your email address: " + pass_link['link']
             msg = Message("Password  Reset",
                 sender='Trendsaf Support',
                 recipients=[email])  # Change to recipient's email
