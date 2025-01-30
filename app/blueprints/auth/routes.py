@@ -194,8 +194,8 @@ def password_reset_request():
             
             #TODO send mail to user
             mail_message = "Click this link to verify your email address: " + link['link']
-            msg = Message("Confirm Registration",
-                sender='support@trendsaf.co',
+            msg = Message("Password  Reset",
+                sender='Trendsaf Support',
                 recipients=[email])  # Change to recipient's email
             msg.body = mail_message
             mail.send(msg)
