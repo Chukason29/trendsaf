@@ -245,10 +245,6 @@ def password_reset(token):
         id = validate_password_link(token).get_json()
         user_id = uuid.UUID(id['id'])           
         
-        return jsonify({
-            "me": id['id']
-        })
-        
         #TODO Collect the new password
         data = request.get_json()
         if not is_json(data):
