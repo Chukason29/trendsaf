@@ -186,10 +186,11 @@ def password_reset_request():
         #TODO checked if user exits
         user = Users.query.filter_by(email=email).first()
         if user:
+            
             id = str(user.user_uuid)
             pass_link = generate_password_link(id)
             
-            #TODO Instantiating an object of tokens and store the link in th database
+            #TODO Instantiating an object of tokens and store the link in the database
             token = Tokens(token = pass_link['link'], is_token_used = False)
             
             #TODO send mail to user
@@ -241,8 +242,12 @@ def pwd_link_verify(token):
 def password_reset(token):
     try:
         #TODO extract the user uuid from the token
-        id = validate_password_link(token).get_json()
-        user_id = uuid.UUID(id['id'])
+        id = validate_reset_token(token).get_json()
+        user_id = uuid.UUID(id['id'])           
+        
+        return jsonify({
+            "me": user_id
+        })
         
         #TODO Collect the new password
         data = request.get_json()
