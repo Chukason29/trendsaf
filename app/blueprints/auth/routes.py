@@ -246,7 +246,7 @@ def password_reset(token):
         user_id = uuid.UUID(id['id'])           
         
         return jsonify({
-            "me": user_id
+            "me": id['message']
         })
         
         #TODO Collect the new password
