@@ -90,13 +90,15 @@ def generate_reset_token(user):
 def validate_reset_token(token):
     serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
     try:
-        user_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=900)# 30 seconds
+        user_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=900)# 15 Minutes
         user_uuid = encode_id(str(uuid.UUID(user_uuid)))
         return jsonify({ "id": user_uuid, "status" : True})
     except SignatureExpired:
         return jsonify({"status" : False, "message" : "token has expired"})
     except BadSignature:
         return jsonify({"status" : False, "message" : "invalid token"})
+    except:
+        raise
 
     
 
