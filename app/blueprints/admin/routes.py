@@ -134,7 +134,7 @@ def confirm_email(token):
         db.session.rollback()
         return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
 
-@admin_bp.route('/reset_password/<email>')
+@admin_bp.route('/reset_password/<email>', methods=['POST'])
 def reset_password(email):
     try:
         #get json data from api body
