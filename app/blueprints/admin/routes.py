@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
-from ...functions import encode_id, decode_id, get_token_auth_header, generate_admin_link, is_valid_email, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
+from ...functions import encode_id, decode_id, generate_admin_link, validate_admin_link, is_valid_email, is_json
 from ...models import Users, Admins, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
 from ...config import Config
 from ... import bcrypt, db, mail
@@ -108,6 +108,32 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
         raise
     finally:
         db.session.close()
+
+
+@admin_bp.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        link = url_for('admin.confirm_email', token=token, _external = True)
+        
+        #TODO querying token for usage and 
+        
+        token_filter = Tokens.query.filter(and_(Tokens.token == link)).first()
+        if token_filter and token_filter.is_token_used==False:
+            email_response = validate_admin_link(token).get_json()
+            if email_response['status'] == True:
+                email = email_response['email']
+                user = Users.query.filter(and_(Users.email == email)).first()
+                user.is_verified = True
+                token_filter.is_token_used = True
+                db.session.commit()
+                #return redirect ('http://localhost:5173/success')
+                return redirect(f"{Config.BASE_URL}/confirm_email?status=True&message=success")
+        else:
+            return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has been used")
+    except:
+        db.session.rollback()
+        return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
+
 
 
 @admin_bp.route('/crops/categories',  methods=['POST'])

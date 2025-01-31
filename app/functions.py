@@ -12,20 +12,6 @@ from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, SignatureExp
 from .config import Config
 
 
-data = {
-            "firstname" : "Victor",
-            "surname" : "Polycarp",
-            "email" : "chuksalaegbu@gmail.com",
-            "phone": "09039444542",
-            "role": ["aggregator"],
-            "password": "54321",
-            "street_name": "LordBridge",
-            "city": "Lome",
-            "zip": "500016",
-            "province": "Kaduna",
-            "country": "India"
-        }
-
 serializer = URLSafeSerializer(Config.AES_KEY)
 timed_serializer = URLSafeTimedSerializer(Config.AES_KEY)
 
@@ -60,7 +46,7 @@ def validate_verification_link(token):
     
 def generate_admin_link(email):
     token = timed_serializer.dumps(email, salt=Config.SECRET_KEY)
-    link = url_for('admin.rest_password', token=token, _external=True)
+    link = url_for('admin.confirm_email', token=token, _external=True)
     return link
 
 def validate_admin_link(token):
