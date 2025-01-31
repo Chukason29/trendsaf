@@ -34,12 +34,14 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'firstname' not in data or 'lastname' not in data or 'email' not in data or 'password' not in data:
+        if 'firstname' not in data or 'lastname' not in data or 'email' not in data:
             abort(422)
         
         message = ""
         email = html.escape(data['email'])
-        password = data["password"]
+        
+        #initial password for admin
+        admin_password = str(uuid.uuid4())[:8]  # Extracts first 8 characters
         if not is_valid_email(data['email']): #checking if email is in correct format
             return jsonify({"message": "invalid email"})
         else:
@@ -49,10 +51,10 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                 if user_email:
                     return jsonify({"exists": True, "message": "Account with email already exists"}), 400
             
-                firstname = html.escape(data['firstname'])
-                lastname = html.escape(data['lastname'])
+                admin_firstname = html.escape(data['firstname'])
+                admin_lastname = html.escape(data['lastname'])
                 #hash the password
-                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+                admin_hashed_password = bcrypt.generate_password_hash(admin_password).decode('utf-8')
 
                 #creating a user uuid for identification
                 new_admin_uuid = uuid.uuid4()
@@ -64,19 +66,19 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
            
                 new_user = Admins(
                             admin_uuid = new_admin_uuid, 
-                            firstname = firstname, 
-                            lastname = lastname, 
+                            firstname = admin_firstname, 
+                            lastname = admin_lastname,
                             email = email,
-                            password = hashed_password
+                            password = admin_hashed_password
                         )
                 #message to send to the user
             
                 
                 #creating a link to be sent to mail
-                link = generate_admin_link(email)
+                admin_link = generate_admin_link(email)
                 
                 #TODO Instantiating an object of tokens and store the link in the database
-                token = Tokens(token = link, is_token_used = False)
+                token = Tokens(token = admin_link, is_token_used = False)
                 
                 #TODO persist info to the data
                 db.session.add(new_user)
@@ -85,7 +87,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                 
                 
                 # Render HTML template
-                html_content = render_template("admin_mail.html", link=link, firstname=firstname)
+                html_content = render_template("admin_mail.html", admin_link=admin_link, admin_firstname=admin_firstname, admin_password=admin_password)
                 #TODO send mail to user
                 #verify_mail_message = f""
                 msg = Message("Admin Password Reset",
