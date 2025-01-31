@@ -48,7 +48,6 @@ class Profile(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     updated_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC')) 
 
-
 class OAuthProvider(db.Model):
     __tablename__ = 'oauth_providers'
     id = db.Column(db.Integer, primary_key=True)

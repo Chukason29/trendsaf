@@ -149,6 +149,31 @@ paths:
         '200':
           description: Successfully logged out
 
+
+  /admin/reg:
+    post:
+      summary: User Registration
+      description: Registers a new user in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful registration
+
   /admin/crops:
     post:
       summary: Add Crop

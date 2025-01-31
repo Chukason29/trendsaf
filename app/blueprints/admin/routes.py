@@ -25,7 +25,7 @@ admin_bp = Blueprint('admin', __name__)
 
 
 
-@admin_bp.route('/admin_reg', methods=['GET', 'POST'])
+@admin_bp.route('/reg', methods=['POST'])
 def admin_reg(): # The hashed uuid value will be appended to the url link
     try:
         #get json data from api body
