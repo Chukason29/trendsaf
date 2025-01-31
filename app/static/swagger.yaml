@@ -172,6 +172,30 @@ paths:
         '200':
           description: Successful registration
 
+
+  /admin/reset_password/{email}:
+    post:
+      summary: Admin Reset password
+      description: Resets Password for admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                initial_password:
+                  type: string
+                new_password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        '200':
+          description: Successful registration
+
   /admin/crops:
     post:
       summary: Add Crop

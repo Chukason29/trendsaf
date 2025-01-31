@@ -134,19 +134,44 @@ def confirm_email(token):
         db.session.rollback()
         return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
 
-@admin_bp.route('/reset_password/<token>')
-def reset_password(token):
-    #get json data from api body
+@admin_bp.route('/reset_password/<email>')
+def reset_password(email):
+    try:
+        #get json data from api body
         data = request.get_json()
         if not is_json(data):
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
+        if 'email' not in data or 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
             abort(422)
 
-
-
+        email = data["email"]
+        initial_password = data["initial_password"]
+        new_password = data["new_password"]
+        confirm_password = data["confirm_password"]
+        #TODO checked if user exits
+        user = Admins.query.filter_by(email=email).first()
+        if user: 
+            #TODO check if initial password matches the password in the database
+            if not (initial_password and bcrypt.check_password_hash(user.password, initial_password)):
+                return jsonify({
+                    "status" : False,
+                    "message" : "wrong initial password"
+                })
+            if new_password != confirm_password:
+                return jsonify({
+                    "status": False,
+                    "message" : "password and confirm password not same"
+                })
+        
+        else:
+            return jsonify({
+                "status" : False,
+                "message": "admin does not exist"
+            })
+    except:
+        raise
 
 
 
