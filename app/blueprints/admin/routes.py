@@ -253,7 +253,7 @@ def cropcategories():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
@@ -297,7 +297,7 @@ def addcrop():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
@@ -341,7 +341,7 @@ def addcrop_variety():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
@@ -383,7 +383,7 @@ def addcountry():
         #Retrieve authorization token
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             if not is_json(data):
@@ -423,7 +423,7 @@ def addregion():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
@@ -459,7 +459,7 @@ def process_state():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
@@ -496,7 +496,7 @@ def addproduct():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(admin_uuid = id).first()
+        user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
