@@ -275,6 +275,7 @@ def password_reset(token):
         #TODO return the appropriate value
         pass
     except Exception as e:
+        db.session.rollback()
         raise
     finally:
         pass
