@@ -152,7 +152,7 @@ paths:
 
   /admin/reg:
     post:
-      summary: User Registration
+      summary: Admin Registration
       description: Registers a new user in the system.
       requestBody:
         required: true
