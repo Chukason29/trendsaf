@@ -170,7 +170,7 @@ def reset_password(email):
                 "status" : False,
                 "message": "admin does not exist"
             })
-        user.password = initial_password
+        user.password = new_password
         db.session.commit()
         return jsonify({
             "status" : True,
