@@ -127,12 +127,26 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect(f"{Config.BASE_URL}/confirm_email?status=True&message=success")
+                return redirect(f"{Config.BASE_URL}/admin_email?email={email}")
         else:
             return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has been used")
     except:
         db.session.rollback()
         return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
+
+@admin_bp.route('/reset_password/<token>')
+def reset_password(token):
+    #get json data from api body
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        
+        #check if all required parameters are contained in the json body
+        if 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
+            abort(422)
+
+
+
 
 
 
