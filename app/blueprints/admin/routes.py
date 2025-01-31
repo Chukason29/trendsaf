@@ -122,7 +122,7 @@ def confirm_email(token):
             email_response = validate_admin_link(token).get_json()
             if email_response['status'] == True:
                 email = email_response['email']
-                user = Users.query.filter(and_(Users.email == email)).first()
+                user = Admins.query.filter(and_(Admins.email == email)).first()
                 user.is_verified = True
                 token_filter.is_token_used = True
                 db.session.commit()
@@ -181,6 +181,66 @@ def reset_password(email):
         raise
 
 
+@admin_bp.route('/login', methods=['POST'])
+def login():
+    try:
+        #TODO get email and password from
+        data = request.get_json()
+        if not is_json(data):
+            abort(415)
+        if 'email' not in data or 'password' not in data:
+            abort(422)
+        email = request.json.get('email')
+        password = request.json.get('password')
+
+        #TODO perform rate limiting
+
+        #TODO compare email and password if they are great
+        #TODO checked if user exits
+        user = Admins.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({
+                "status" : False,
+                "message" : "wrong email or password",
+            })
+            #checked if there is a password match
+        if not (password and bcrypt.check_password_hash(user.password, password)):
+            return jsonify({
+                "status" : False,
+                "message" : "wrong email or password"
+            })
+        #TODO collected the uuid of the user encode it and use as the identity of the user in the JWT
+        
+        id = encode_id(str(user.admin_uuid)) #user's uuid
+        user_id = user.admin_id #user's id
+        
+       
+        if user:                 
+            #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
+            access_token = create_access_token(
+                identity=id,
+                expires_delta=timedelta(hours=24),
+            )
+            #TODO create a crsf token and set it as a coookie
+            csrf_token = secrets.token_hex(16)
+            response = jsonify({
+                    "status": True,
+                    "access_token": access_token,
+                    "firstname": user.firstname,
+                    "lastname": user.lastname
+                })
+            #Set access_token as an HttpOnly cookie
+            response.set_cookie(
+                'access_token',
+                access_token,
+                httponly=True,  # Prevents JavaScript access
+                secure=False,    # Use True if using HTTPS
+                samesite='None' # Change based on your requirements
+            )
+
+        return response, 200       
+    except Exception as e:
+        raise
 
 @admin_bp.route('/crops/categories',  methods=['POST'])
 @jwt_required()
@@ -193,9 +253,9 @@ def cropcategories():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
+        user_query = Users.query.filter_by(admin_uuid = id).first()
         
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -237,9 +297,9 @@ def addcrop():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
+        user_query = Users.query.filter_by(admin_uuid = id).first()
         
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -281,9 +341,9 @@ def addcrop_variety():
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
+        user_query = Users.query.filter_by(admin_uuid = id).first()
         
-        if user_query and user_data['company_role'] == "Z":
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -323,8 +383,8 @@ def addcountry():
         #Retrieve authorization token
         auth_token = request.headers.get("Authorization").split(" ")[1]
         user_data = decode_token(auth_token, allow_expired=False)
-        user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        user_query = Users.query.filter_by(admin_uuid = id).first()
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             if not is_json(data):
                 abort(415)
@@ -363,8 +423,8 @@ def addregion():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        user_query = Users.query.filter_by(admin_uuid = id).first()
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
             country = request.get_json()
@@ -399,8 +459,8 @@ def process_state():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        user_query = Users.query.filter_by(admin_uuid = id).first()
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
             crop = request.get_json()
@@ -436,8 +496,8 @@ def addproduct():
         user_data = decode_token(auth_token, allow_expired=False)
         
         
-        user_query = Users.query.filter_by(user_uuid = id).first()
-        if user_query and user_data['company_role'] == "Z":
+        user_query = Users.query.filter_by(admin_uuid = id).first()
+        if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
             country = request.get_json()
