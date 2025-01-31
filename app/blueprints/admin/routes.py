@@ -55,15 +55,15 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                 hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
                 #creating a user uuid for identification
-                new_user_uuid = uuid.uuid4()
+                new_admin_uuid = uuid.uuid4()
 
                 #convert the uuid to a string and encrypt
-                encrypted_id = encode_id(str(new_user_uuid))
+                encrypted_id = encode_id(str(new_admin_uuid))
 
                 #TODO Instantiating an object of users
            
                 new_user = Admins(
-                            user_uuid = new_user_uuid, 
+                            admin_uuid = new_admin_uuid, 
                             firstname = firstname, 
                             lastname = lastname, 
                             email = email,
