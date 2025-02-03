@@ -150,14 +150,14 @@ def reset_password(token):
             abort(415)
         
         #check if all required parameters are contained in the json body
-        if 'email' not in data or 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
+        if 'token' not in data or 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
             abort(422)
-
-        email_response = validate_admin_link(token).get_json()
-        email = email_response["email"]
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
+        admin_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=900)# 15 Minutes
+        admin_uuid = str(uuid.UUID(admin_uuid))
         
         return jsonify({
-            "email": email
+            "admin_uuid": admin_uuid
         })
         initial_password = data["initial_password"]
         new_password = data["new_password"]
