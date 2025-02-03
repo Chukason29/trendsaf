@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_
 from datetime import timedelta
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
 from ...functions import encode_id, decode_id, generate_admin_link, validate_admin_link, is_valid_email, is_json
 from ...models import Users, Admins, Profile, Tokens, Crops, Countries, Regions, CropCategories, ProcessLevel, CropVariety, Product
 from ...config import Config
@@ -121,11 +122,19 @@ def confirm_email(token):
             if email_response['status'] == True:
                 email = email_response['email']
                 user = Admins.query.filter(and_(Admins.email == email)).first()
-                user.is_verified = True
+                
+                #collecting the admin' uuid
+                admin_uuid = user.admin_uuid
+                
+                #create a token using the admin's uuid
+                timed_serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
+                admin_token = timed_serializer.dumps(str(admin_uuid), salt=Config.RESET_PASSWORD_SALT)
+                
+                #effect the change that the admin verification link has been used
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect(f"{Config.BASE_URL}/admin_email?email={email}")
+                return redirect(f"{Config.BASE_URL}/reset_password/{admin_token}")
         else:
             return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has been used")
     except:
