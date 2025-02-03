@@ -163,7 +163,7 @@ def reset_password(token):
         new_password = data["new_password"]
         confirm_password = data["confirm_password"]
         #TODO checked if user exits
-        user = Admins.query.filter_by(email=email).first()
+        user = Admins.query.filter_by(admin_uuid=admin_uuid).first()
         if user: 
             #TODO check if initial password matches the password in the database
             if not (initial_password and bcrypt.check_password_hash(user.password, initial_password)):
