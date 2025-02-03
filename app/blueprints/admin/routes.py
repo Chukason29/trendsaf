@@ -156,9 +156,6 @@ def reset_password(token):
         admin_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=3600)# 15 Minutes
         admin_uuid = str(uuid.UUID(admin_uuid))
         
-        return jsonify({
-            "admin_uuid": admin_uuid
-        })
         initial_password = data["initial_password"]
         new_password = data["new_password"]
         confirm_password = data["confirm_password"]
