@@ -173,7 +173,7 @@ paths:
           description: Successful registration
 
 
-  /admin/reset_password/{email}:
+  /admin/reset_password/{token}:
     post:
       summary: Admin Reset password
       description: Resets Password for admin
@@ -184,8 +184,6 @@ paths:
             schema:
               type: object
               properties:
-                email:
-                  type: string
                 initial_password:
                   type: string
                 new_password:

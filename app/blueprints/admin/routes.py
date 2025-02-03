@@ -153,7 +153,7 @@ def reset_password(token):
         if 'token' not in data or 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
             abort(422)
         serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
-        admin_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=900)# 15 Minutes
+        admin_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=3600)# 15 Minutes
         admin_uuid = str(uuid.UUID(admin_uuid))
         
         return jsonify({
