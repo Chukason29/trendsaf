@@ -23,8 +23,6 @@ import requests
 admin_bp = Blueprint('admin', __name__)
 
 
-
-
 @admin_bp.route('/reg', methods=['POST'])
 def admin_reg(): # The hashed uuid value will be appended to the url link
     try:
@@ -134,8 +132,8 @@ def confirm_email(token):
         db.session.rollback()
         return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
 
-@admin_bp.route('/reset_password/<email>', methods=['POST'])
-def reset_password(email):
+@admin_bp.route('/reset_password/<token>', methods=['POST'])
+def reset_password(token):
     try:
         #get json data from api body
         data = request.get_json()
@@ -146,7 +144,12 @@ def reset_password(email):
         if 'email' not in data or 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
             abort(422)
 
-        email = data["email"]
+        email_response = validate_admin_link(token).get_json()
+        email = email_response["email"]
+        
+        return jsonify({
+            "email": email
+        })
         initial_password = data["initial_password"]
         new_password = data["new_password"]
         confirm_password = data["confirm_password"]

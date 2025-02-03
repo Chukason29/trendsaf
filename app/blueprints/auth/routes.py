@@ -389,8 +389,7 @@ def confirmation():
             secure=False,    # Use True if using HTTPS
             samesite='None' # Change based on your requirements
         )
-        return response, 200
-        
+        return response, 200     
     except Exception as e:
         db.session.rollback()
         raise

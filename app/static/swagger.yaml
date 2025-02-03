@@ -196,7 +196,6 @@ paths:
         '200':
           description: Successful registration
 
-
   /admin/login:
     post:
       summary: Admin Login

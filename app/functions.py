@@ -44,8 +44,8 @@ def validate_verification_link(token):
     })
     
     
-def generate_admin_link(email):
-    token = timed_serializer.dumps(email, salt=Config.SECRET_KEY)
+def generate_admin_link(token):
+    token = timed_serializer.dumps(token, salt=Config.SECRET_KEY)
     link = url_for('admin.confirm_email', token=token, _external=True)
     return link
 
