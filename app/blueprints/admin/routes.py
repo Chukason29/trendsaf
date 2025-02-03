@@ -156,7 +156,8 @@ def reset_password(token):
         admin_uuid = str(uuid.UUID(admin_uuid))
         
         initial_password = data["initial_password"]
-        new_password = bcrypt.generate_password_hash(data["new_password"]).decode('utf-8')
+        new_password = data["new_password"]
+        
         confirm_password = data["confirm_password"]
         #TODO checked if user exits
         user = Admins.query.filter_by(admin_uuid=admin_uuid).first()
@@ -178,7 +179,7 @@ def reset_password(token):
                 "status" : False,
                 "message": "admin does not exist"
             })
-        user.password = new_password
+        user.password = bcrypt.generate_password_hash(data["new_password"]).decode('utf-8')
         db.session.commit()
         return jsonify({
             "status" : True,
