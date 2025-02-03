@@ -199,8 +199,8 @@ def login():
             abort(415)
         if 'email' not in data or 'password' not in data:
             abort(422)
-        email = request.json.get('email')
-        password = request.json.get('password')
+        email = data['email']
+        password = data["password"]
 
         #TODO perform rate limiting
 
