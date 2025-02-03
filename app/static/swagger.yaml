@@ -177,6 +177,12 @@ paths:
     post:
       summary: Admin Reset password
       description: Resets Password for admin
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
