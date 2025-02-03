@@ -108,7 +108,6 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
     finally:
         db.session.close()
 
-
 @admin_bp.route('/confirm_email/<token>')
 def confirm_email(token):
     try:
@@ -157,7 +156,7 @@ def reset_password(token):
         admin_uuid = str(uuid.UUID(admin_uuid))
         
         initial_password = data["initial_password"]
-        new_password = data["new_password"]
+        new_password = bcrypt.generate_password_hash(data["new_password"]).decode('utf-8')
         confirm_password = data["confirm_password"]
         #TODO checked if user exits
         user = Admins.query.filter_by(admin_uuid=admin_uuid).first()
