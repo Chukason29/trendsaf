@@ -548,11 +548,9 @@ def import_data():
             abort(404)
         file_id = data["file_id"]
         api_key = Config.FILE_API_KEY
-        return jsonify({
-            "data" : api_key
-        })
+
         
-        '''file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
+        file_url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&key={Config.FILE_API_KEY}"
         
         
         # Fetch the file content
@@ -581,7 +579,10 @@ def import_data():
                 
         db.session.commit()
 
-        return "Data imported successfully." '''
+        return jsonify({
+            "status": True,
+            "message" : "Product imported successfully"
+        })
 
     except:
         db.session.rollback()
