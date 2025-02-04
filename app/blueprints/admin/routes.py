@@ -229,6 +229,11 @@ def login():
             access_token = create_access_token(
                 identity=id,
                 expires_delta=timedelta(hours=24),
+                additional_claims=(
+                    {
+                        "user_role": "admin"
+                    }
+                )
             )
             #TODO create a crsf token and set it as a coookie
             csrf_token = secrets.token_hex(16)
