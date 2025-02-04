@@ -151,5 +151,6 @@ class Product(db.Model):
     crop_variety_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
     country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
     region_id = db.Column(db.Integer, db.ForeignKey('regions.region_id'))
+    product_origin = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
