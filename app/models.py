@@ -144,7 +144,7 @@ class Regions(db.Model):
     products = db.relationship('Product', backref="region_product", uselist=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
-class Product(db.Model):
+class Pricing(db.Model):
     __tablename__ = "product"
     product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
