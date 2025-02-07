@@ -517,14 +517,15 @@ def addproduct():
             country = request.get_json()
             if not is_json(country):
                 abort(415)
-            if 'crop_id' not in country or 'crop_variety_id' not in country or 'region_id' not in country or 'country_id' not in country or 'price' not in country:
+            if 'crop_id' not in country or 'crop_variety_id' not in country or 'region_id' not in country or 'country_id' not in country or 'price' not in country or 'product_origin' not in country:
                 abort(422)
             crop_id = request.json.get('crop_id')
             crop_variety_id = request.json.get('crop_variety_id')
             country_id = request.json.get('country_id')
             region_id = request.json.get('region_id')
+            product_origin = request.json.get('product_origin')
             price = request.json.get('price') * 100
-            new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id, price = price)
+            new_product = Product(crop_id = crop_id, crop_variety_id = crop_variety_id, country_id = country_id, region_id = region_id, price = price, product_origin = product_origin)
             db.session.add(new_product)
             db.session.commit()
             
@@ -570,7 +571,7 @@ def import_data():
             df = pd.read_csv(csv_data)
             
         # Ensure DataFrame columns match the table structure
-        df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "created_at"]
+        df.columns = ["crop_id","crop_variety_id", "country_id", "region_id", "price", "product_origin"]
         for index, row in df.iterrows():
             product = Product(
                 crop_id = row["crop_id"],
@@ -578,7 +579,7 @@ def import_data():
                 country_id=row["country_id"],
                 region_id=row["region_id"],
                 price=row["price"],
-                created_at=row["created_at"]
+                product_origin=row["product_origin"]
             )
             db.session.add(product)
                 

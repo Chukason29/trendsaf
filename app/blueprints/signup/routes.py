@@ -163,8 +163,8 @@ def link_resend():
         db.session.commit()
         
         #TODO send mail to user
-        mail_message = "Click this link to verify your email address: " + link
-        msg = Message("Confirm Registration",
+        mail_message = render_template("email_verification.html", link=link, firstname=user.firstname)
+        msg = Message("Email Verification",
             sender='support@trendsaf.co',
             recipients=[email])  # Change to recipient's email
         msg.body = mail_message
@@ -198,12 +198,12 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect("https://app.trendsaf.co/confirm_email?status=True&message=success")
+                return redirect(f"{Config.BASE_URL}/confirm_email?status=True&message=success")
         else:
-            return redirect("https://app.trendsaf.co/confirm_email?status=False&message=link has been used")
+            return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has been used")
     except:
         db.session.rollback()
-        return redirect("https://app.trendsaf.co/confirm_email?status=False&message=link has expired")
+        return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
         
 @signup_bp.route('/')
 def index():

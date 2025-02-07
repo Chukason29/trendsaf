@@ -153,4 +153,5 @@ class Product(db.Model):
     region_id = db.Column(db.Integer, db.ForeignKey('regions.region_id'))
     product_origin = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer)
+    product_source = db.Column(db.String(20), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
