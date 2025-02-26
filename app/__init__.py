@@ -48,6 +48,7 @@ def create_app(config_class=Config):
     app.config.get(Config.FILE_API_KEY)
     
     app.config.get(Config.BASE_URL)
+    app.config.get(Config.ADMIN_BASE_URL)
 
 
      # Initialize extensions with the app
