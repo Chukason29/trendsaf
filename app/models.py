@@ -6,11 +6,11 @@ import pendulum
 
 class Users(db.Model):
     __tablename__ = "users"
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_uuid = db.Column(UUID(as_uuid=True), unique=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    user_uuid = db.Column(UUID(as_uuid=True), unique=True, index=True)
     firstname = db.Column(db.String(255), nullable=False)
     lastname = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(70), nullable=False, unique=True)
+    email = db.Column(db.String(70), nullable=False, unique=True, index=True)
     password = db.Column(db.String(1000), nullable=True)
     is_confirmed = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, nullable=False, default=False)
@@ -25,8 +25,8 @@ class Users(db.Model):
 
 class Admins(db.Model):
     __tablename__ = "admins"
-    admin_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    admin_uuid = db.Column(UUID(as_uuid=True), unique=True)
+    admin_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    admin_uuid = db.Column(UUID(as_uuid=True), unique=True, index=True)
     firstname = db.Column(db.String(255), nullable=False)
     lastname = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(70), nullable=False, unique=True)
@@ -34,8 +34,8 @@ class Admins(db.Model):
     
 class Profile(db.Model):
     __tablename__ = "profile"
-    profile_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id')) 
+    profile_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), index=True) 
     company_name = db.Column(db.String(100), nullable=True)
     company_type = db.Column(db.String(50), nullable=True)
     company_size = db.Column(db.String(5), nullable=True)
@@ -79,7 +79,7 @@ class PasswordTable(db.Model):
 
 class LoginTable(db.Model):
     __tablename__ = "logintable"
-    login_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    login_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     auth_method = db.Column(db.String(50), nullable=False)
     action = db.Column(db.String(50), nullable=False)
@@ -98,59 +98,67 @@ class Tokens(db.Model):
 
 class CropCategories(db.Model):
     __tablename__ = "cropcategories"
-    crop_category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_category_name = db.Column(db.String(30), nullable=False)
-    crop = db.relationship('Crops', backref="crops", uselist=False)
+    category_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    category_code = db.Column(db.String(5), nullable=False, unique=True, index=True)
+    category_name = db.Column(db.String(30), nullable=False)
+    # One category can have many crops
+    crops = db.relationship('Crops', backref="category", lazy=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class Crops(db.Model):
     __tablename__ = "crops"
-    crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_category_id = db.Column(db.Integer, db.ForeignKey('cropcategories.crop_category_id'))
+    crop_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    crop_code = db.Column(db.String(10), nullable=False, unique=True, index=True)
     crop_name = db.Column(db.String(50), nullable=False)
-    crop_variety = db.relationship('CropVariety', backref="cropvariety", uselist=False)
+    category_code = db.Column(db.String, db.ForeignKey('cropcategories.category_code'), index=True)
+    
+    # One crop can have many varieties and many products
+    varieties = db.relationship('CropVariety', backref="crop", lazy=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
 
 class CropVariety(db.Model):
     __tablename__ = "cropvariety"
-    crop_variety_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
-    crop_variety_name = db.Column(db.String(30), nullable=False)
-    crop_variety = db.relationship('ProcessLevel', backref="process_level", uselist=False)
-    product = db.relationship('Product', backref="product", uselist=False)
+    variety_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    variety_code = db.Column(db.String(15), nullable=False, unique=True, index=True)
+    variety_name = db.Column(db.String(30), nullable=False)
+    crop_code = db.Column(db.String, db.ForeignKey('crops.crop_code'), index=True)
+    # One variety can have many process levels and many products
+    products = db.relationship('Product', backref="cropvariety", lazy=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
-
+    
 class ProcessLevel(db.Model):
     __tablename__ = "process_level"
-    process_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
-    crop_variety_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
+    process_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     process_state = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
 class Countries(db.Model):
     __tablename__ = "countries"
-    country_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    country_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     country_name = db.Column(db.String(100), nullable=False)
-    country_code = db.Column(db.String(5), nullable=False)
-    products = db.relationship('Product', backref="products", uselist=False)
+    country_code = db.Column(db.String(5), nullable=False, unique=True, index=True)
+    # One country can have many products and regions
+    products = db.relationship('Product', backref="countries", lazy=True)
+    regions = db.relationship('Regions', backref="countries", lazy=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
 class Regions(db.Model):
     __tablename__ = "regions"
-    region_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
+    region_id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    region_code = db.Column(db.String(100), nullable=False, unique=True, index=True)
+    country_code = db.Column(db.String, db.ForeignKey('countries.country_code'), index=True)
     region_name = db.Column(db.String(100), nullable=False)
-    products = db.relationship('Product', backref="region_product", uselist=False)
+    # One region can have many products
+    products = db.relationship('Product', backref="regions", lazy=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
     
 class Product(db.Model):
     __tablename__ = "product"
     product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    crop_id = db.Column(db.Integer, db.ForeignKey('crops.crop_id'))
-    crop_variety_id = db.Column(db.Integer, db.ForeignKey('cropvariety.crop_variety_id'))
-    country_id = db.Column(db.Integer, db.ForeignKey('countries.country_id'))
-    region_id = db.Column(db.Integer, db.ForeignKey('regions.region_id'))
+    variety_code = db.Column(db.String, db.ForeignKey('cropvariety.variety_code'))
+    country_code = db.Column(db.String, db.ForeignKey('countries.country_code'))
+    region_code = db.Column(db.String, db.ForeignKey('regions.region_code'))
     product_origin = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: pendulum.now('UTC'))
+    # Relationships (access via .crop, .cropvariety, .country, and .region)
