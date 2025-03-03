@@ -133,12 +133,12 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect(f"{Config.BASE_URL}/reset_password/{admin_token}")
+                return redirect(f"{Config.ADMIN_BASE_URL}/reset_password/{admin_token}")
         else:
-            return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has been used")
+            return redirect(f"{Config.ADMIN_BASE_URL}/confirm_email?status=False&message=link has been used")
     except:
         db.session.rollback()
-        return redirect(f"{Config.BASE_URL}/confirm_email?status=False&message=link has expired")
+        return redirect(f"{Config.ADMIN_BASE_URL}/confirm_email?status=False&message=link has expired")
 
 @admin_bp.route('/reset_password/<token>', methods=['POST'])
 def reset_password(token):
