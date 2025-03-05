@@ -37,15 +37,14 @@ def crop_prices():
         if not is_json(data):
             abort(415)
             
-        if 'crop_id' not in data or 'country_id' not in data or 'duration' not in data:
+        if 'crop_code' not in data or 'country_code' not in data or 'duration' not in data:
             abort(422)
             
         #TODO get the values of crop_variety_id and country_id
-        crop_id = data['crop_id']
-        #crop_variety_id = data['crop_variety_id']
-        country_id = data['country_id']
+        crop_code = data['crop_code']
+        #crop_variety_code = data['crop_variety_code']
+        country_code = data['country_code']
         duration = data['duration']
-        #.filter(Product.created_at.between(current_duration, now)) \
         #TODO get today's date using python
         now = pendulum.now()
         
@@ -58,32 +57,32 @@ def crop_prices():
             previous_duration = current_duration.subtract(months=1)
                 
         result = db.session.query(
-        CropVariety.crop_variety_id.label('variety_id'),
-            CropVariety.crop_variety_name.label('variety_name'),
-            func.avg(Product.price).label('average_price'),
-            func.max(Product.price).label('max_price'),
-            func.min(Product.price).label('min_price')
-        ).join(Product, CropVariety.crop_variety_id == Product.crop_variety_id) \
-        .filter(Product.crop_id == crop_id) \
-        .filter(Product.country_id == country_id) \
-        .group_by(CropVariety.crop_variety_id) \
-        .all()
+            CropVariety.variety_code.label('variety_code'),
+            CropVariety.variety_name.label('variety_name'),
+            Product.price.label('price'),
+            Regions.region_name.label('region'),
+        ).join(
+            Product, CropVariety.variety_code == Product.variety_code
+        ).join(
+            Regions, Regions.region_code == Product.region_code  # Fix here
+        ).filter(
+            Product.country_code == country_code
+        ).group_by(
+            CropVariety.variety_code, CropVariety.variety_name, Product.price, Regions.region_name  # Fix group_by to match SELECT columns
+        )
+
 
         result_json = [
         {
-            "variety_id": row.variety_id,
+            "variety_code": row.variety_code,
             "variety_name": row.variety_name,
-            "max_price" : row.max_price/100,
-            "min_price" : row.min_price/100,
-            "price_change" : row.max_price/row.min_price,
-            "average_price": float(row.average_price)/100 if row.average_price is not None else None
+            "region" : row.region,
+            "price": row.price,
+            "price-change": 0
         }
         for row in result
         ]
-    
-        return jsonify(result_json)
-        
-        
+        return jsonify(result_json)  
         
     except:
         db.session.rollback()

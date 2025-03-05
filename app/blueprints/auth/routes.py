@@ -61,7 +61,7 @@ def login():
             #TODO create a JWT token ==> On the jwt token i will add the verification and confirmation status to the client
             access_token = create_access_token(
                 identity=id,
-                expires_delta=timedelta(hours=48),
+                expires_delta=timedelta(hours=2400),
                 additional_claims=(
                     {
                         "is_confirmed": True,

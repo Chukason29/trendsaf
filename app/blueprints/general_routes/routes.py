@@ -14,12 +14,12 @@ def get_cropcategories():
 
 @general_bp.route('/crops', methods = ['GET'])
 def get_crops():
-    crops = Crops.query.order_by(Crops.crop_category_id.asc()).all()
+    crops = Crops.query.order_by(Crops.crop_name.asc()).all()
     all_crops = [
         {
             "id": crop.crop_code, 
             "name":crop.crop_name,
-            "crop_category": crop.category_codes
+            "crop_category": crop.category_code
         } for crop in crops
     ]
     return jsonify(all_crops)
