@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://trendsaf.com.ng
+  - url: https://trendsaf.com.ng
 
 paths:
   /signup/registration:
@@ -460,10 +460,10 @@ paths:
             schema:
               type: object
               properties:
-                crop_id:
-                  type: integer
-                country_id:
-                  type: integer
+                crop_code:
+                  type: string
+                country_code:
+                  type: string
                 duration:
                   type: string
       responses:
