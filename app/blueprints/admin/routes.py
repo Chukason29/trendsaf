@@ -93,7 +93,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                     sender='support@trendsaf.co',
                     recipients=[email])  # Change to recipient's email
                 msg.html = html_content  # Set HTML content for email
-                mail.send(msg)
+                #mail.send(msg)
 
                 #TODO return a json object
                 return jsonify({
