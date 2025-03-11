@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_mail import Mail, Message
 from sqlalchemy import Column, Integer, String, and_, func
 from sqlalchemy.orm import joinedload
-from datetime import timedelta
+from datetime import timedelta, datetime
 from ...functions import encode_id, decode_id, get_token_auth_header, generate_reset_token, validate_reset_token, is_json, generate_verification_link,generate_password_link, validate_password_link
 from ...models import Users, Profile, Tokens, Crops, Countries, Regions, CropCategories, CropVariety, Product
 from ...config import Config
@@ -47,12 +47,22 @@ def crop_prices():
         duration = data['duration']
         #TODO get today's date using python
         now = pendulum.now()
-        
+        date_format = "%a, %d %b %Y %H:%M:%S"
         if duration == "week":   
-            current_duration = now.start_of("week").subtract(days=1)
-            previous_duration = current_duration.subtract(weeks=1)
+            current_duration =now.start_of("week").subtract(days=1) 
+            previous_duration =current_duration.subtract(weeks=1)
             
-        elif duration == "month":   
+                       
+            '''current_duration = current_duration.strftime("%a, %d %b %Y %H:%M:%S")
+            current_duration = datetime.datetime.strptime(current_duration, date_format)
+            current_duration = int(current_duration.timestamp())
+            
+            previous_duration = previous_duration.strftime("%a, %d %b %Y %H:%M:%S")
+            previous_duration = datetime.datetime.strptime(previous_duration, date_format)
+            previous_duration = int(previous_duration.timestamp())'''
+            
+            
+        elif duration == "month":
             current_duration = now.start_of("month")
             previous_duration = current_duration.subtract(months=1)
                 
@@ -60,15 +70,17 @@ def crop_prices():
             CropVariety.variety_code.label('variety_code'),
             CropVariety.variety_name.label('variety_name'),
             Product.price.label('price'),
+            Product.unit.label('unit'),
+            Product.created_at.label('created_at'),
             Regions.region_name.label('region'),
         ).join(
             Product, CropVariety.variety_code == Product.variety_code
         ).join(
             Regions, Regions.region_code == Product.region_code  # Fix here
-        ).filter(
-            Product.country_code == country_code
-        ).group_by(
-            CropVariety.variety_code, CropVariety.variety_name, Product.price, Regions.region_name  # Fix group_by to match SELECT columns
+        ).filter (and_(
+            Product.country_code == country_code, Product.created_at.between(previous_duration, now)
+        )).group_by(
+            CropVariety.variety_code, CropVariety.variety_name, Product.price, Product.unit, Product.created_at, Regions.region_name  # Fix group_by to match SELECT columns
         )
 
 
@@ -77,11 +89,29 @@ def crop_prices():
             "variety_code": row.variety_code,
             "variety_name": row.variety_name,
             "region" : row.region,
+            "unit" : row.unit,
             "price": row.price,
-            "price-change": 0
+            "price-change": 0,
+            "created_at" : row.created_at
         }
         for row in result
         ]
+        
+        def convert_rfc1123_to_datetime(date_str):
+            return datetime.strptime(date_str, "%a, %d %b %Y %H:%M:%S GMT")
+        
+        def filter_by_date_range(data, start_date_str, end_date_str):
+            start_date = convert_rfc1123_to_datetime(start_date_str)
+            end_date = convert_rfc1123_to_datetime(end_date_str)
+            
+            # Filter the list based on the 'created_at' field
+            filtered_data = [
+                item for item in data
+                if start_date <= convert_rfc1123_to_datetime(item["created_at"]) <= end_date
+            ]
+    
+            return filtered_data
+        
         return jsonify(result_json)  
         
     except:

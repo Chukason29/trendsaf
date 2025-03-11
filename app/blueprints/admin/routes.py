@@ -133,12 +133,12 @@ def confirm_email(token):
                 token_filter.is_token_used = True
                 db.session.commit()
                 #return redirect ('http://localhost:5173/success')
-                return redirect(f"{Config.BASE_URL}/reset_password/{admin_token}")
+                return redirect(f"{Config.ADMIN_BASE_URL}/reset_password/{admin_token}")
         else:
-            return redirect(f"{Config.BASE_URL}/reset_password?status=False&message=link has been used")
+            return redirect(f"{Config.ADMIN_BASE_URL}/reset_password?status=False&message=link has been used")
     except:
         db.session.rollback()
-        return redirect(f"{Config.BASE_URL}/reset_password?status=False&message=link has expired")
+        return redirect(f"{Config.ADMIN_BASE_URL}/reset_password?status=False&message=link has expired")
 
 @admin_bp.route('/reset_password/<token>', methods=['POST'])
 def reset_password(token):
@@ -585,14 +585,15 @@ def import_data():
             df = pd.read_csv(csv_data)
             
         # Ensure DataFrame columns match the table structure
-        df.columns = ["variety_code", "country_code", "region_code", "price", "product_origin"]
+        df.columns = ["variety_code", "country_code", "region_code", "price", "product_origin", "unit"]
         for index, row in df.iterrows():
             product = Product(
                 variety_code=row["variety_code"],
                 country_code=row["country_code"],
                 region_code=row["region_code"],
                 price=row["price"],
-                product_origin=row["product_origin"]
+                product_origin=row["product_origin"],
+                unit = row["unit"]
             )
             db.session.add(product)
                 

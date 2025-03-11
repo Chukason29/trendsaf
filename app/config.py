@@ -8,7 +8,7 @@ JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 class Config:
     """Base configuration."""
     SECRET_KEY = os.getenv('SECRET_KEY')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KE')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     RESET_PASSWORD_SALT = os.getenv('RESET_PASSWORD_SALT')
     JWT_ERROR_MESSAGE_KEY = os.getenv('JWT_ERROR_MESSAGE_KEY')
     JWT_COOKIE_CSRF_PROTECT = os.getenv('JWT_COOKIE_CSRF_PROTECT')
