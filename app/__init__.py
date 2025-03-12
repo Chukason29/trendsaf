@@ -60,7 +60,8 @@ def create_app(config_class=Config):
     cors.init_app(app, resources=
                   {
                       r"/auth/*": {
-                          "origins": ["http://143.110.175.227:5080","https://app.trendsaf.co","https://trendsaf.com.ng","https://admin.trendsaf.co", "*"],
+                          #"origins": ["http://143.110.175.227:5080","https://app.trendsaf.co","https://trendsaf.com.ng","https://admin.trendsaf.co", "*"],
+                          "origins": '*',
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
                           "allow_headers": ["Content-Type", "Authorization", "true","X-CSRF-TOKEN"], 
                           "expose_headers": ["Authorization"],
@@ -74,7 +75,8 @@ def create_app(config_class=Config):
                           "supports_credentials": True,
                         },
                         r"/admin/*": {
-                          "origins": ["http://143.110.175.227:5080", "https://app.trendsaf.co", "https://trendsaf.com.ng","https://admin.trendsaf.co", "*"],
+                          #"origins": ["http://143.110.175.227:5080", "https://app.trendsaf.co", "https://trendsaf.com.ng","https://admin.trendsaf.co", "*"],
+                          "origins":"*",
                           "methods": ["POST", "GET", "PUT", "PATCH", "DELETE"],
                           "allow_headers": ["Content-Type", "Authorization", "true", "X-CSRF-TOKEN"], 
                           "expose_headers": ["Authorization"],
