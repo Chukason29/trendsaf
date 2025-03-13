@@ -24,7 +24,7 @@ import requests
 admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/reg', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/reg', methods=['POST'])
 def admin_reg(): # The hashed uuid value will be appended to the url link
     try:
         #get json data from api body
@@ -140,7 +140,7 @@ def confirm_email(token):
         db.session.rollback()
         return redirect(f"{Config.ADMIN_BASE_URL}/reset_password?status=False&message=link has expired")
 
-@admin_bp.route('/reset_password/<token>', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/reset_password/<token>', methods=['POST'])
 def reset_password(token):
     try:
         #get json data from api body
@@ -256,7 +256,7 @@ def login():
     except Exception as e:
         raise
 
-@admin_bp.route('/crops/categories',  methods=['POST', 'OPTIONS'])
+@admin_bp.route('/crops/categories',  methods=['POST'])
 @jwt_required()
 def cropcategories():
     try:
@@ -305,7 +305,7 @@ def cropcategories():
         raise
 
 
-@admin_bp.route('/crops',  methods=['POST', 'OPTIONS'])
+@admin_bp.route('/crops',  methods=['POST'])
 @jwt_required()
 def addcrop():
     try:
@@ -353,7 +353,7 @@ def addcrop():
         db.session.rollback()
         raise
 
-@admin_bp.route('/crops/variety',  methods=['POST', 'OPTIONS'])
+@admin_bp.route('/crops/variety',  methods=['POST'])
 @jwt_required()
 def addcrop_variety():
     try:
@@ -402,7 +402,7 @@ def addcrop_variety():
         raise
     
 
-@admin_bp.route('/countries', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/countries', methods=['POST'])
 @jwt_required()
 def addcountry():
     try:
@@ -440,7 +440,7 @@ def addcountry():
         raise
     
 
-@admin_bp.route('countries/regions', methods=['POST', 'OPTIONS'])
+@admin_bp.route('countries/regions', methods=['POST'])
 @jwt_required()
 def addregion():
     try:
@@ -477,7 +477,7 @@ def addregion():
         raise
 
     
-@admin_bp.route('/crops/process_state', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/crops/process_state', methods=['POST'])
 @jwt_required()
 def process_state():
     try:
@@ -514,7 +514,7 @@ def process_state():
         raise
     
 
-@admin_bp.route('/products', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/products', methods=['POST'])
 @jwt_required()
 def addproduct():
     try:
@@ -554,7 +554,7 @@ def addproduct():
         raise
 
 
-@admin_bp.route('/products/import', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/products/import', methods=['POST'])
 @jwt_required()
 def import_data():
     try:
