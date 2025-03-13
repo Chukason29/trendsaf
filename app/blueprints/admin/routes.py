@@ -195,6 +195,7 @@ def login():
     try:
         #TODO get email and password from
         data = request.get_json()
+        return jsonify(data)
         if not is_json(data):
             abort(415)
         if 'email' not in data or 'password' not in data:
