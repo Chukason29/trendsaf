@@ -200,7 +200,7 @@ def reset_password(token):
         raise
 
 
-@admin_bp.route('/login', methods=['POST'])
+@admin_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     try:
         #TODO get email and password from
