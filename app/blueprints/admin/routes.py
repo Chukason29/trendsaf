@@ -190,16 +190,15 @@ def reset_password(token):
         raise
 
 
-@admin_bp.route('/login', methods=['POST', 'OPTIONS'])
+@admin_bp.route('/login', methods=['POST'])
 def login():
     try:
         #TODO get email and password from
-        data = request.get_json()
-        return jsonify(data)
-        if not is_json(data):
-            abort(415)
-        if 'email' not in data or 'password' not in data:
-            abort(422)
+        data = request.get_json(silent=True)
+        #if not is_json(data):
+        #    abort(415)
+        if not data:
+            return jsonify({"status": False, "message": "Invalid JSON"}), 400
         email = data['email']
         password = data["password"]
 
