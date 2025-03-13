@@ -27,7 +27,7 @@ admin_bp = Blueprint('admin', __name__)
 def handle_options_requests():
     if request.method == 'OPTIONS':
         # Respond with the proper CORS headers
-        response = admin_bp.make_response('')
+        response = make_response("")
         response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin')
         response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, PATCH'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-CSRF-TOKEN'
