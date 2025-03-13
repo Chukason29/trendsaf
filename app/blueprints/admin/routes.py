@@ -68,7 +68,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                             firstname = admin_firstname, 
                             lastname = admin_lastname,
                             email = email,
-                            password = admin_password
+                            password = admin_hashed_password
                         )
                 #message to send to the user
             
