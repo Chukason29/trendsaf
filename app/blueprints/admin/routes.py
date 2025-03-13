@@ -23,8 +23,18 @@ import requests
 
 admin_bp = Blueprint('admin', __name__)
 
+@admin_bp.before_request
+def handle_options_requests():
+    if request.method == 'OPTIONS':
+        # Respond with the proper CORS headers
+        response = admin_bp.make_response('')
+        response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin')
+        response.headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, PATCH'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-CSRF-TOKEN'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
 
-@admin_bp.route('/reg', methods=['POST'])
+@admin_bp.route('/reg', methods=['POST', 'OPTIONS'])
 def admin_reg(): # The hashed uuid value will be appended to the url link
     try:
         #get json data from api body
@@ -140,7 +150,7 @@ def confirm_email(token):
         db.session.rollback()
         return redirect(f"{Config.ADMIN_BASE_URL}/reset_password?status=False&message=link has expired")
 
-@admin_bp.route('/reset_password/<token>', methods=['POST'])
+@admin_bp.route('/reset_password/<token>', methods=['POST', 'OPTIONS'])
 def reset_password(token):
     try:
         #get json data from api body
@@ -190,7 +200,7 @@ def reset_password(token):
         raise
 
 
-@admin_bp.route('/login', methods=['POST'])
+@admin_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     try:
         #TODO get email and password from
@@ -256,7 +266,7 @@ def login():
     except Exception as e:
         raise
 
-@admin_bp.route('/crops/categories',  methods=['POST'])
+@admin_bp.route('/crops/categories',  methods=['POST', 'OPTIONS'])
 @jwt_required()
 def cropcategories():
     try:
@@ -305,7 +315,7 @@ def cropcategories():
         raise
 
 
-@admin_bp.route('/crops',  methods=['POST'])
+@admin_bp.route('/crops',  methods=['POST', 'OPTIONS'])
 @jwt_required()
 def addcrop():
     try:
@@ -353,7 +363,7 @@ def addcrop():
         db.session.rollback()
         raise
 
-@admin_bp.route('/crops/variety',  methods=['POST'])
+@admin_bp.route('/crops/variety',  methods=['POST', 'OPTIONS'])
 @jwt_required()
 def addcrop_variety():
     try:
@@ -402,7 +412,7 @@ def addcrop_variety():
         raise
     
 
-@admin_bp.route('/countries', methods=['POST'])
+@admin_bp.route('/countries', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def addcountry():
     try:
@@ -440,7 +450,7 @@ def addcountry():
         raise
     
 
-@admin_bp.route('countries/regions', methods=['POST'])
+@admin_bp.route('countries/regions', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def addregion():
     try:
@@ -477,7 +487,7 @@ def addregion():
         raise
 
     
-@admin_bp.route('/crops/process_state', methods=['POST'])
+@admin_bp.route('/crops/process_state', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def process_state():
     try:
@@ -514,7 +524,7 @@ def process_state():
         raise
     
 
-@admin_bp.route('/products', methods=['POST'])
+@admin_bp.route('/products', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def addproduct():
     try:
@@ -554,7 +564,7 @@ def addproduct():
         raise
 
 
-@admin_bp.route('/products/import', methods=['POST'])
+@admin_bp.route('/products/import', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def import_data():
     try:
@@ -608,3 +618,9 @@ def import_data():
         db.session.rollback()
         raise
     
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin')
+    return response

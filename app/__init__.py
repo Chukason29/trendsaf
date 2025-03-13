@@ -1,5 +1,5 @@
 from .functions import is_valid_email, verify_code, verify_code_expiration
-from flask import Flask, jsonify, redirect, session, url_for, send_from_directory
+from flask import Flask, jsonify, redirect, session, url_for, send_from_directory, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from sqlalchemy import Column, Integer, String, and_
@@ -95,8 +95,6 @@ def create_app(config_class=Config):
                           "supports_credentials": True,
                         }
                    })
-
-
 
     @app.route('/static/<path:path>')
     def send_static(path):
