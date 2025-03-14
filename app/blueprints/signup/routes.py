@@ -36,7 +36,7 @@ def registration(): # The hashed uuid value will be appended to the url link
             abort(422)
         
         message = ""
-        email = html.escape(data['email'])
+        email = html.escape(data['email']).lower()
         password = data["password"]
         if not is_valid_email(data['email']): #checking if email is in correct format
             return jsonify({"message": "invalid email"})

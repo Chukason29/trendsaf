@@ -35,7 +35,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
             return jsonify({"status": False, "message": "Invalid JSON"}), 400
         
         message = ""
-        email = html.escape(data['email'])
+        email = html.escape(data['email']).lower()
         
         #initial password for admin
         admin_password = str(uuid.uuid4())[:8]  # Extracts first 8 characters
