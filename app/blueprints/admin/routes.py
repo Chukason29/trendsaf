@@ -28,13 +28,11 @@ admin_bp = Blueprint('admin', __name__)
 def admin_reg(): # The hashed uuid value will be appended to the url link
     try:
         #get json data from api body
-        data = request.get_json()
-        if not is_json(data):
-            abort(415)
-        
-        #check if all required parameters are contained in the json body
-        if 'firstname' not in data or 'lastname' not in data or 'email' not in data:
-            abort(422)
+        data = request.get_json(silent=True)
+        #if not is_json(data):
+        #    abort(415)
+        if not data:
+            return jsonify({"status": False, "message": "Invalid JSON"}), 400
         
         message = ""
         email = html.escape(data['email'])
@@ -93,7 +91,7 @@ def admin_reg(): # The hashed uuid value will be appended to the url link
                     sender='support@trendsaf.co',
                     recipients=[email])  # Change to recipient's email
                 msg.html = html_content  # Set HTML content for email
-                #mail.send(msg)
+                mail.send(msg)
 
                 #TODO return a json object
                 return jsonify({
@@ -144,13 +142,11 @@ def confirm_email(token):
 def reset_password(token):
     try:
         #get json data from api body
-        data = request.get_json()
-        if not is_json(data):
-            abort(415)
-        
-        #check if all required parameters are contained in the json body
-        if 'initial_password' not in data or 'new_password' not in data or 'confirm_password' not in data:
-            abort(422)
+        data = request.get_json(silent=True)
+        #if not is_json(data):
+        #    abort(415)
+        if not data:
+            return jsonify({"status": False, "message": "Invalid JSON"}), 400
         serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         admin_uuid = serializer.loads(token, salt=Config.RESET_PASSWORD_SALT, max_age=3600)# 15 Minutes
         admin_uuid = str(uuid.UUID(admin_uuid))
@@ -270,11 +266,10 @@ def cropcategories():
         user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
-            data = request.get_json()
+            data = request.get_json(silent=True)
             if not data:
                 return jsonify({"status": False, "message": "Invalid or missing JSON body"}), 400
-            if not is_json(data):
-                abort(415)
+            
             category_code = data.get('category_code')
             category_name = data.get('category_name')
             
@@ -319,9 +314,9 @@ def addcrop():
         user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
-            data = request.get_json()
-            if not is_json(data):
-                abort(415)
+            data = request.get_json(silent=True)
+            #if not is_json(data):
+            #    abort(415)
             if 'crop_name' not in data or 'category_code' not in data or 'crop_code' not in data:
                 abort(422)
             crop_name = request.json.get('crop_name')
@@ -367,9 +362,9 @@ def addcrop_variety():
         user_query = Admins.query.filter_by(admin_uuid = id).first()
         
         if user_query and user_data['user_role'] == "admin":
-            data = request.get_json()
-            if not is_json(data):
-                abort(415)
+            data = request.get_json(silent=True)
+            #if not is_json(data):
+            #    abort(415)
             if 'variety_name' not in data or 'crop_code' not in data or 'variety_code' not in data:
                 abort(422)
             variety_name = request.json.get('variety_name')
@@ -412,9 +407,9 @@ def addcountry():
         user_data = decode_token(auth_token, allow_expired=False)
         user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
-            data = request.get_json()
-            if not is_json(data):
-                abort(415)
+            data = request.get_json(silent=True)
+            #if not is_json(data):
+            #    abort(415)
             if 'country_name' not in data or 'country_code' not in data:
                 abort(422)
             country_name = request.json.get('country_name')
@@ -452,11 +447,11 @@ def addregion():
         
         user_query = Admins.query.filter_by(admin_uuid = id).first()
         if user_query and user_data['user_role'] == "admin":
-            data = request.get_json()
+            data = request.get_json(silent=True)
             
-            country = request.get_json()
-            if not is_json(country):
-                abort(415)
+            country = request.get_json(silent=True)
+            #if not is_json(country):
+            #    abort(415)
             if 'region_name' not in country or 'country_code' not in country or 'region_code' not in country:
                 abort(422)
             region_name = request.json.get('region_name')
@@ -492,8 +487,8 @@ def process_state():
             data = request.get_json()
             
             crop = request.get_json()
-            if not is_json(crop):
-                abort(415)
+            #if not is_json(crop):
+            #    abort(415)
             if 'crop_id' not in crop or 'crop_variety_id' not in crop or 'process_state' not in crop:
                 abort(422)
             process_state = request.json.get('process_state')
@@ -528,9 +523,9 @@ def addproduct():
         if user_query and user_data['user_role'] == "admin":
             data = request.get_json()
             
-            country = request.get_json()
-            if not is_json(country):
-                abort(415)
+            country = request.get_json(silent=True)
+            #if not is_json(country):
+            #   abort(415)
             if 'crop_id' not in country or 'crop_variety_id' not in country or 'region_id' not in country or 'country_id' not in country or 'price' not in country or 'product_origin' not in country:
                 abort(422)
             crop_id = request.json.get('crop_id')
@@ -559,9 +554,9 @@ def addproduct():
 def import_data():
     try:
         #get json data from api body
-        data = request.get_json()
-        if not is_json(data):
-            abort(415)
+        data = request.get_json(silent=True)
+        #if not is_json(data):
+        #    abort(415)
         
         #check if all required parameters are contained in the json body
         if 'file_id' not in data:

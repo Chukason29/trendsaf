@@ -64,3 +64,11 @@ def get_regions():
     regions = Regions.query.order_by(Regions.country_code.asc()).all()
     allregions = [{"region_name" : region.region_name, "region_id" : region.region_code, "country_id" : region.country_code} for region in regions]
     return jsonify(allregions)
+
+@general_bp.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-CSRF-TOKEN"
+    return response
